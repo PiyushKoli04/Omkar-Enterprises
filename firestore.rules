@@ -1,0 +1,161 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ==========================================
+    // HELPER FUNCTIONS
+    // ==========================================
+    
+    // Check if the user is authenticated
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    // Check if the user is an admin (read from their user doc)
+    function isAdmin() {
+      return isSignedIn() && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "admin";
+    }
+    
+    // Check if the user owns the resource
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+    
+    // Validate string length
+    function validString(field, maxLen) {
+      return request.resource.data[field] is string && 
+             request.resource.data[field].size() <= maxLen;
+    }
+
+    // ==========================================
+    // SETTINGS (business info)
+    // ==========================================
+    match /settings/{docId} {
+      // Anyone can read business settings
+      allow read: if true;
+      // Only admins can write
+      allow write: if isAdmin();
+    }
+
+    // ==========================================
+    // USERS
+    // ==========================================
+    match /users/{userId} {
+      // Users can read their own profile; admins can read all
+      allow read: if isOwner(userId) || isAdmin();
+      
+      // Users can create their own doc on first login
+      allow create: if isOwner(userId) && 
+        request.resource.data.role == "user"; // Cannot self-assign admin
+      
+      // Users can update their own profile BUT cannot change their role
+      allow update: if isOwner(userId) && 
+        request.resource.data.role == resource.data.role; // role must remain unchanged
+      
+      // Admins can update any user (including role changes)
+      allow update: if isAdmin();
+      
+      // No user can delete user documents
+      allow delete: if false;
+
+      // ---- Saved Addresses (subcollection) ----
+      match /savedAddresses/{addressId} {
+        allow read, write: if isOwner(userId);
+      }
+      
+      // ---- Search History (subcollection) ----
+      match /searchHistory/{historyId} {
+        allow read, write: if isOwner(userId);
+      }
+      
+      // ---- Favourite Pincodes (subcollection) ----
+      match /favouritePincodes/{pincode} {
+        allow read, write: if isOwner(userId);
+      }
+    }
+
+    // ==========================================
+    // PINCODES
+    // ==========================================
+    match /pincodes/{pincode} {
+      // Public read (anyone can check serviceability)
+      allow read: if true;
+      // Only admins can write (add/update/delete pincodes)
+      allow write: if isAdmin();
+    }
+
+    // ==========================================
+    // COUNTRIES (International)
+    // ==========================================
+    match /countries/{countryId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ==========================================
+    // ALLOWED ITEMS (International)
+    // ==========================================
+    match /allowedItems/{itemId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ==========================================
+    // PROHIBITED ITEMS (International)
+    // ==========================================
+    match /prohibitedItems/{itemId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ==========================================
+    // ENQUIRIES
+    // ==========================================
+    match /enquiries/{enquiryId} {
+      // Public can create enquiries (with validation)
+      allow create: if validString('name', 100) && 
+                       validString('message', 2000) &&
+                       request.resource.data.status == "new" &&
+                       request.resource.data.keys().hasAll(['name', 'message', 'status', 'createdAt']);
+      
+      // Users can read their own enquiries
+      allow read: if isSignedIn() && 
+        (resource.data.userId == request.auth.uid || isAdmin());
+      
+      // Only admins can update (status changes) or delete
+      allow update, delete: if isAdmin();
+    }
+
+    // ==========================================
+    // PICKUP REQUESTS
+    // ==========================================
+    match /pickupRequests/{requestId} {
+      // Logged-in users can create
+      allow create: if isSignedIn() && 
+        request.resource.data.userId == request.auth.uid &&
+        request.resource.data.status == "pending";
+      
+      // Users can read their own; admins can read all
+      allow read: if isSignedIn() && 
+        (resource.data.userId == request.auth.uid || isAdmin());
+      
+      // Only admins can update status or delete
+      allow update, delete: if isAdmin();
+    }
+
+    // ==========================================
+    // LABELS (admin only)
+    // ==========================================
+    match /labels/{labelId} {
+      allow read, write: if isAdmin();
+    }
+
+    // ==========================================
+    // DEFAULT: deny everything else
+    // ==========================================
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

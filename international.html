@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="Ship internationally to over 220 countries and territories with Omkar Enterprises. Fast customs clearance, allowed & prohibited items guide, and door-to-door air freight.">
+  <title>International Courier & Air Freight – Omkar Enterprises</title>
+
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages.css">
+  <link rel="stylesheet" href="css/print.css">
+</head>
+<body>
+
+  <!-- Injected Header -->
+  <header class="header" id="site-header"></header>
+
+  <main class="page-content" id="main-content">
+    
+    <!-- Hero Banner -->
+    <section class="section py-8 bg-surface-alt text-center">
+      <div class="container max-w-3xl">
+        <span class="badge badge-primary mb-3">Global Logistics</span>
+        <h1 class="text-3xl font-extrabold mb-3">International Courier Services</h1>
+        <p class="text-secondary text-base">
+          Connecting India with 220+ countries and global territories. Safe, compliant door-to-door delivery with customs documentation assistance.
+        </p>
+      </div>
+    </section>
+
+    <!-- Search & Region Filters -->
+    <section class="section py-6">
+      <div class="container">
+        
+        <div class="card p-6 shadow-sm mb-8">
+          <div class="flex gap-4 flex-wrap items-center justify-between mb-4">
+            <div class="flex-1 min-w-[280px]">
+              <label for="country-search" class="form-label font-bold text-sm mb-1">Search Destination Country</label>
+              <div class="input-group">
+                <input 
+                  type="text" 
+                  id="country-search" 
+                  class="form-input" 
+                  placeholder="e.g. United Arab Emirates, United States, UK, Canada..."
+                  autocomplete="off"
+                >
+                <button type="button" id="clear-search-btn" class="btn btn-ghost">Clear</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Region Filter Pills -->
+          <div class="flex gap-2 flex-wrap" id="region-filters">
+            <button class="btn btn-sm btn-primary region-btn" data-region="All">All Continents</button>
+            <button class="btn btn-sm btn-outline region-btn" data-region="Middle East">Middle East / Gulf</button>
+            <button class="btn btn-sm btn-outline region-btn" data-region="North America">North America</button>
+            <button class="btn btn-sm btn-outline region-btn" data-region="Europe">Europe & UK</button>
+            <button class="btn btn-sm btn-outline region-btn" data-region="Asia Pacific">Asia Pacific</button>
+            <button class="btn btn-sm btn-outline region-btn" data-region="Africa">Africa</button>
+            <button class="btn btn-sm btn-outline region-btn" data-region="South America">South America</button>
+          </div>
+        </div>
+
+        <!-- Countries Grid -->
+        <h2 class="text-xl font-bold mb-4 flex items-center justify-between">
+          <span>Serviceable Destinations</span>
+          <span id="country-count" class="text-xs text-secondary font-normal">Loading network...</span>
+        </h2>
+        
+        <div class="country-grid mb-12" id="countries-container" aria-live="polite">
+          <div class="text-center py-8 text-secondary col-span-full">
+            <span class="spinner-sm"></span> Loading international network...
+          </div>
+        </div>
+
+        <!-- Section 2: Allowed vs Prohibited Items Guide -->
+        <div class="card p-6 shadow-md mt-12">
+          <div class="flex gap-2 border-b border-border pb-3 mb-6" role="tablist">
+            <button class="btn btn-sm btn-primary item-tab-btn" data-tab="allowed" role="tab" aria-selected="true">
+              ✅ What You Can Send
+            </button>
+            <button class="btn btn-sm btn-outline item-tab-btn" data-tab="prohibited" role="tab" aria-selected="false">
+              🚫 Prohibited / Restricted Items
+            </button>
+            <button class="btn btn-sm btn-outline item-tab-btn" data-tab="customs" role="tab" aria-selected="false">
+              📄 Documentation & KYC
+            </button>
+          </div>
+
+          <!-- Tab 1: Allowed Items -->
+          <div id="tab-allowed" class="tab-panel">
+            <div class="grid grid-2 gap-4">
+              <div class="card p-4 border border-border">
+                <h4 class="font-bold text-base text-success mb-1">Personal & Legal Documents</h4>
+                <p class="text-xs text-secondary">Passports, legal agreements, educational transcripts, certificates, visa documents.</p>
+              </div>
+              <div class="card p-4 border border-border">
+                <h4 class="font-bold text-base text-success mb-1">Commercial Branded Dry Foods</h4>
+                <p class="text-xs text-secondary">Indian branded sweets (sweets in tin/box), spices, namkeen, roasted snacks (subject to country limits).</p>
+              </div>
+              <div class="card p-4 border border-border">
+                <h4 class="font-bold text-base text-success mb-1">Garments & Textiles</h4>
+                <p class="text-xs text-secondary">Traditional dresses, sarees, cotton clothing, bedsheets, fabrics, and handmade carpets.</p>
+              </div>
+              <div class="card p-4 border border-border">
+                <h4 class="font-bold text-base text-success mb-1">Handicrafts & Non-Precious Gifts</h4>
+                <p class="text-xs text-secondary">Brass artefacts, photo frames, wooden toys, personal electronics samples (without uninstalled batteries).</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab 2: Prohibited Items -->
+          <div id="tab-prohibited" class="tab-panel hidden">
+            <div class="grid grid-2 gap-4">
+              <div class="card p-4 border border-border">
+                <h4 class="font-bold text-base text-danger mb-1">Aviation Hazards (Batteries & Aerosols)</h4>
+                <p class="text-xs text-secondary">Loose powerbanks, standalone lithium cells, perfume sprays, deodorants, fireworks, lighter gas.</p>
+              </div>
+              <div class="card p-4 border border-border">
+                <h4 class="font-bold text-base text-danger mb-1">Currency & Bullion</h4>
+                <p class="text-xs text-secondary">Cash, gold, silver bars, precious gems, bearer bonds, traveller cheques.</p>
+              </div>
+              <div class="card p-4 border border-border">
+                <h4 class="font-bold text-base text-danger mb-1">Perishable Meats & Fresh Plants</h4>
+                <p class="text-xs text-secondary">Raw poultry, raw dairy, seeds without quarantine permit, live plants.</p>
+              </div>
+              <div class="card p-4 border border-border">
+                <h4 class="font-bold text-base text-danger mb-1">Controlled Chemicals & Narcotics</h4>
+                <p class="text-xs text-secondary">Unprescribed narcotics, toxic solvents, acids, weapon replicas, military gear.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab 3: Customs & Documentation -->
+          <div id="tab-customs" class="tab-panel hidden">
+            <div class="space-y-4">
+              <div class="card p-4 border border-border">
+                <h4 class="font-bold text-sm mb-1">1. Sender KYC (Mandatory as per Indian Customs)</h4>
+                <p class="text-xs text-secondary">Valid Aadhaar Card, Passport, or Voter ID for individuals. GST Certificate & IEC for businesses.</p>
+              </div>
+              <div class="card p-4 border border-border">
+                <h4 class="font-bold text-sm mb-1">2. Non-Commercial or Commercial Invoice</h4>
+                <p class="text-xs text-secondary">Detailed line-by-line item list with exact item descriptions, quantity, value in INR, and purpose of dispatch (Gift / Sample / Sale).</p>
+              </div>
+              <div class="card p-4 border border-border">
+                <h4 class="font-bold text-sm mb-1">3. Consignee Contact Information</h4>
+                <p class="text-xs text-secondary">Exact destination address, postal/zip code, local destination phone number, and recipient email ID for customs delivery notification.</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Injected Footer & Bottom Dock -->
+  <footer class="footer" id="site-footer"></footer>
+  <nav class="bottom-nav" id="bottom-nav"></nav>
+
+  <!-- Application Logic -->
+  <script type="module">
+    import { initUI, showToast } from './js/ui.js';
+    import { getCountries, renderCountriesList } from './js/international.js';
+    import { initAuth } from './js/auth.js';
+    import { getBusinessSettings } from './js/db.js';
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      initUI();
+      initAuth();
+
+      try {
+        const business = await getBusinessSettings();
+        const { injectFooter } = await import('./js/ui.js');
+        injectFooter(business);
+      } catch (e) {}
+
+      const container = document.getElementById('countries-container');
+      const searchInput = document.getElementById('country-search');
+      const clearBtn = document.getElementById('clear-search-btn');
+      const countEl = document.getElementById('country-count');
+      const regionBtns = document.querySelectorAll('.region-btn');
+
+      let allCountries = [];
+      let currentRegion = 'All';
+
+      try {
+        allCountries = await getCountries();
+        if (countEl) countEl.textContent = `${allCountries.length} countries covered`;
+        renderCountriesList(container, allCountries, '', 'All');
+      } catch (e) {
+        showToast('Error loading countries list', 'error');
+      }
+
+      function updateFilter() {
+        const query = searchInput.value;
+        renderCountriesList(container, allCountries, query, currentRegion);
+      }
+
+      searchInput.addEventListener('input', updateFilter);
+
+      clearBtn.addEventListener('click', () => {
+        searchInput.value = '';
+        updateFilter();
+      });
+
+      regionBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          regionBtns.forEach(b => {
+            b.classList.remove('btn-primary');
+            b.classList.add('btn-outline');
+          });
+          btn.classList.add('btn-primary');
+          btn.classList.remove('btn-outline');
+
+          currentRegion = btn.dataset.region;
+          updateFilter();
+        });
+      });
+
+      // Tabs
+      const tabBtns = document.querySelectorAll('.item-tab-btn');
+      tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          tabBtns.forEach(b => {
+            b.classList.remove('btn-primary');
+            b.classList.add('btn-outline');
+            b.setAttribute('aria-selected', 'false');
+          });
+          btn.classList.add('btn-primary');
+          btn.classList.remove('btn-outline');
+          btn.setAttribute('aria-selected', 'true');
+
+          const tabName = btn.dataset.tab;
+          document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+          const target = document.getElementById(`tab-${tabName}`);
+          if (target) target.classList.remove('hidden');
+        });
+      });
+    });
+  </script>
+</body>
+</html>
