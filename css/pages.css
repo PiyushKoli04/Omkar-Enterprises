@@ -7,8 +7,8 @@
    ========================================== */
 .hero.hero-swift {
   position: relative;
-  background: var(--bg-primary);
-  padding: 48px 0 56px;
+  background: #FAF7F2;
+  padding: 56px 0 64px;
   overflow: hidden;
 }
 

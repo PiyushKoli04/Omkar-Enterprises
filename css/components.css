@@ -605,39 +605,48 @@ textarea:focus {
    MOBILE SLIDE-OVER DRAWER
    ========================================== */
 .mobile-drawer-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.65);
-  backdrop-filter: blur(6px);
-  z-index: var(--z-modal);
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  background: rgba(15, 23, 42, 0.65) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 999999 !important;
   opacity: 0;
   pointer-events: none;
   transition: opacity var(--transition-base);
 }
 
 .mobile-drawer-backdrop.open {
-  opacity: 1;
-  pointer-events: auto;
+  opacity: 1 !important;
+  pointer-events: auto !important;
 }
 
 .mobile-drawer {
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  width: 86%;
-  max-width: 320px;
-  background: var(--bg-card);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
-  display: flex;
-  flex-direction: column;
-  transform: translateX(-100%);
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  z-index: calc(var(--z-modal) + 1);
+  position: fixed !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  width: 86% !important;
+  max-width: 320px !important;
+  background: #FFFFFF !important;
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.4) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  transform: translateX(-100%) !important;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  z-index: 1000000 !important;
 }
 
 .mobile-drawer-backdrop.open .mobile-drawer {
-  transform: translateX(0);
+  transform: translateX(0) !important;
 }
 
 .mobile-drawer-header {
@@ -646,6 +655,8 @@ textarea:focus {
   justify-content: space-between;
   padding: var(--space-4) var(--space-5);
   border-bottom: 1px solid var(--border-color);
+  background: #FFFFFF;
+  flex-shrink: 0 !important;
 }
 
 .mobile-drawer-nav {
@@ -653,15 +664,18 @@ textarea:focus {
   flex-direction: column;
   gap: 4px;
   padding: var(--space-4);
-  overflow-y: auto;
-  flex: 1;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  background: #FFFFFF;
 }
 
 .mobile-nav-link {
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  padding: 10px 14px;
+  padding: 11px 14px;
   border-radius: var(--radius-lg);
   font-size: 14px;
   font-weight: var(--fw-medium);
@@ -691,12 +705,14 @@ textarea:focus {
   height: 1px;
   background: var(--border-color);
   margin: var(--space-2) 0;
+  flex-shrink: 0;
 }
 
 .mobile-drawer-footer {
   padding: var(--space-4);
   border-top: 1px solid var(--border-color);
   background: var(--bg-tertiary);
+  flex-shrink: 0 !important;
 }
 
 /* ==========================================

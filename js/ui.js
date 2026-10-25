@@ -349,6 +349,12 @@ export function injectHeader() {
       </div>
     </div>
   `;
+
+  // Move drawer backdrop directly to body to prevent stacking context or sticky clipping
+  const drawerBackdrop = headerEl.querySelector('#mobile-drawer-backdrop');
+  if (drawerBackdrop) {
+    document.body.appendChild(drawerBackdrop);
+  }
 }
 
 // ==========================================

@@ -326,7 +326,7 @@
   <!-- Application Logic -->
   <script type="module">
     import { initUI, showToast, escapeHtml } from '../js/ui.js';
-    import { initAuth, onAuthChange, logoutUser, getCurrentUser, getUserRole } from '../js/auth.js';
+    import { initAuth, onAuthChange, logoutUser, getCurrentUser, getUserRole, ADMIN_EMAILS } from '../js/auth.js';
     import { 
       requireAdminGuard, getDashboardStats, parsePincodeFile, executePincodeUpload 
     } from '../js/admin.js';
@@ -338,15 +338,20 @@
       initAuth();
 
       // Guard check
-      onAuthChange(async (user) => {
+      onAuthChange(async (user, userData, isAdminUser) => {
         if (!user) {
           window.location.href = '../login.html?return=admin/index.html';
           return;
         }
+        
         const role = await getUserRole(user.uid);
-        if (role !== 'admin') {
+        const isUserAdmin = isAdminUser || role === 'admin' || (user.email && ADMIN_EMAILS.includes(user.email.toLowerCase()));
+
+        if (!isUserAdmin) {
           showToast('Unauthorized. You must have admin role.', 'error');
-          window.location.href = '../index.html';
+          setTimeout(() => {
+            window.location.href = '../index.html';
+          }, 1200);
           return;
         }
 

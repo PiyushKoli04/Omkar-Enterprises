@@ -28,6 +28,7 @@ const googleProvider = new GoogleAuthProvider();
 let currentUser = null;
 let currentUserData = null;
 let isAdmin = false;
+let isAuthResolved = false;
 let authReadyResolve;
 const authReady = new Promise(resolve => { authReadyResolve = resolve; });
 
@@ -39,9 +40,13 @@ const authListeners = [];
  */
 export function onAuthChange(callback) {
   authListeners.push(callback);
-  // If auth is already resolved, call immediately
-  if (currentUser !== undefined) {
-    callback(currentUser, currentUserData, isAdmin);
+  // ONLY call immediately if initial auth state has been resolved by Firebase
+  if (isAuthResolved) {
+    try {
+      callback(currentUser, currentUserData, isAdmin);
+    } catch (e) {
+      console.error('Error in onAuthChange callback:', e);
+    }
   }
 }
 
@@ -140,6 +145,8 @@ onAuthStateChanged(auth, async (user) => {
     isAdmin = false;
     document.body.classList.remove('logged-in', 'is-admin');
   }
+
+  isAuthResolved = true;
 
   // Notify listeners
   authListeners.forEach(cb => {

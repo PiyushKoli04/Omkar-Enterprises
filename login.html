@@ -200,7 +200,7 @@
     import { initUI, showToast } from './js/ui.js';
     import { 
       initAuth, loginWithEmail, registerWithEmail, loginWithGoogle, resetPassword, 
-      getCurrentUser, onAuthChange, getUserRole 
+      getCurrentUser, onAuthChange, getUserRole, ADMIN_EMAILS 
     } from './js/auth.js';
     import { getBusinessSettings } from './js/db.js';
 
@@ -218,13 +218,14 @@
       const returnUrl = urlParams.get('return') || 'account.html';
 
       // If already logged in, redirect
-      onAuthChange(async (user) => {
+      onAuthChange(async (user, userData, isAdminUser) => {
         if (user) {
           const role = await getUserRole(user.uid);
-          if (role === 'admin' && returnUrl === 'account.html') {
-            window.location.href = 'admin/index.html';
+          const isUserAdmin = isAdminUser || role === 'admin' || (user.email && ADMIN_EMAILS.includes(user.email.toLowerCase()));
+          if (isUserAdmin) {
+            window.location.href = (returnUrl === 'account.html' || returnUrl === 'admin/index.html' || returnUrl.includes('admin')) ? 'admin/index.html' : returnUrl;
           } else {
-            window.location.href = returnUrl;
+            window.location.href = returnUrl.includes('admin') ? 'account.html' : returnUrl;
           }
         }
       });
