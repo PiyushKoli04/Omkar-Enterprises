@@ -40,10 +40,12 @@ export function formatPhone(phone) {
  * Generate WhatsApp link
  */
 export function whatsappLink(number, message = '') {
-  const clean = number.replace(/\D/g, '');
+  const clean = String(number || '').replace(/\D/g, '');
   const encoded = encodeURIComponent(message);
   return `https://wa.me/${clean}${message ? '?text=' + encoded : ''}`;
 }
+
+export const getWhatsAppUrl = whatsappLink;
 
 /**
  * Debounce function

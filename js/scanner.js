@@ -31,7 +31,7 @@ async function loadTesseract() {
 }
 
 /**
- * Initialize Tesseract Worker optimized for digits only
+ * Initialize Tesseract Worker optimized for digits and numbers
  */
 async function getOCRWorker() {
   if (tesseractWorker) return tesseractWorker;
@@ -40,8 +40,7 @@ async function getOCRWorker() {
   const worker = await Tesseract.createWorker('eng');
   
   await worker.setParameters({
-    tessedit_char_whitelist: '0123456789',
-    tessedit_pageseg_mode: Tesseract.PSM.SINGLE_BLOCK,
+    tessedit_char_whitelist: '0123456789 -.',
   });
 
   tesseractWorker = worker;
@@ -49,105 +48,142 @@ async function getOCRWorker() {
 }
 
 /**
- * Open Camera & Viewfinder
- * @param {Object} options
- * @param {Function} options.onPincodeDetected - Callback when 6-digit pin is found
- * @param {HTMLElement} options.resultContainer - DOM element to render result
+ * Robust pincode extractor from OCR text
+ */
+function extractPincodes(text) {
+  if (!text) return [];
+  const found = [];
+
+  // 1. Direct 6-digit sequence starting with 1-9
+  const m1 = text.match(/[1-9][0-9]{5}/g);
+  if (m1) found.push(...m1);
+
+  // 2. 3+3 digits with space, hyphen, or dot: e.g. "400 614", "400-614"
+  const m2 = text.match(/([1-9][0-9]{2})[\s\.\-]+([0-9]{3})/g);
+  if (m2) {
+    m2.forEach(m => {
+      const c = m.replace(/[\s\.\-]/g, '');
+      if (/^[1-9][0-9]{5}$/.test(c)) found.push(c);
+    });
+  }
+
+  // 3. Fallback: sanitize non-digits
+  const digitsOnly = text.replace(/[^0-9]/g, ' ');
+  const m3 = digitsOnly.match(/\b[1-9][0-9]{5}\b/g);
+  if (m3) found.push(...m3);
+
+  return [...new Set(found)];
+}
+
+let activePincodeCallback = null;
+
+/**
+ * Open camera scanner modal and initiate video stream
  */
 export async function openCameraScanner(options = {}) {
   const modal = document.getElementById('scanner-modal');
   const video = document.getElementById('scanner-video');
   const statusText = document.getElementById('scanner-status');
-  const guide = document.getElementById('scanner-guide');
 
-  if (!modal || !video) {
-    console.error('Scanner elements missing in DOM');
-    return;
+  if (options.onPincodeDetected) {
+    activePincodeCallback = options.onPincodeDetected;
   }
 
-  // Show modal
-  modal.classList.add('open');
+  if (modal) modal.classList.add('open');
   document.body.style.overflow = 'hidden';
 
-  if (statusText) statusText.textContent = 'Requesting camera access...';
+  if (statusText) statusText.textContent = 'Initializing camera...';
+
+  // Pre-load OCR worker in the background
+  getOCRWorker().catch(err => console.warn('Background OCR preheat warning:', err));
 
   try {
-    // 1. Request camera stream (prefer rear environment camera)
-    const constraints = {
-      video: {
-        facingMode: { ideal: 'environment' },
-        width: { ideal: 1280 },
-        height: { ideal: 720 },
-      },
-      audio: false
-    };
-
-    videoStream = await navigator.mediaDevices.getUserMedia(constraints);
-    video.srcObject = videoStream;
-    await video.play();
-
-    if (statusText) statusText.textContent = 'Align pincode inside the guide box';
-    isScanning = true;
-
-  } catch (err) {
-    console.warn('Camera access failed:', err);
-    let errMsg = 'Camera access was denied or is not supported.';
-    if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
-      errMsg = 'Camera requires HTTPS. Please test on a secure connection.';
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      throw new Error('Camera access is not supported by your browser.');
     }
-    if (statusText) statusText.textContent = errMsg;
-    showToast(errMsg, 'error');
+
+    let stream = null;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: { ideal: 'environment' },
+          width: { ideal: 1920 },
+          height: { ideal: 1080 }
+        }
+      });
+    } catch (e1) {
+      // Fallback without constraints
+      stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    }
+
+    videoStream = stream;
+    if (video) {
+      video.srcObject = stream;
+      video.setAttribute('playsinline', 'true');
+      await video.play();
+    }
+
+    isScanning = true;
+    if (statusText) statusText.textContent = 'Point camera at pincode / address label and tap Capture & Scan.';
+  } catch (err) {
+    console.error('Camera access error:', err);
+    if (statusText) statusText.textContent = 'Camera permission denied or camera not found.';
+    showToast(err.message || 'Unable to access camera.', 'error');
   }
 }
 
 /**
- * Capture frame from video, crop to guide box, and preprocess
- * @returns {HTMLCanvasElement} Preprocessed canvas
+ * Capture both cropped guide region and full frame
  */
-function captureAndPreprocessFrame() {
+function captureFrames() {
   const video = document.getElementById('scanner-video');
   const guide = document.getElementById('scanner-guide');
-  if (!video || !guide || !video.videoWidth) return null;
+  if (!video || !video.videoWidth) return null;
 
-  const videoRect = video.getBoundingClientRect();
-  const guideRect = guide.getBoundingClientRect();
+  const vW = video.videoWidth;
+  const vH = video.videoHeight;
 
-  // Calculate ratio between displayed video and actual video stream
-  const scaleX = video.videoWidth / videoRect.width;
-  const scaleY = video.videoHeight / videoRect.height;
+  // Full frame canvas
+  const fullCanvas = document.createElement('canvas');
+  fullCanvas.width = vW;
+  fullCanvas.height = vH;
+  const fullCtx = fullCanvas.getContext('2d');
+  fullCtx.drawImage(video, 0, 0, vW, vH);
 
-  const cropX = Math.max(0, (guideRect.left - videoRect.left) * scaleX);
-  const cropY = Math.max(0, (guideRect.top - videoRect.top) * scaleY);
-  const cropW = Math.min(video.videoWidth - cropX, guideRect.width * scaleX);
-  const cropH = Math.min(video.videoHeight - cropY, guideRect.height * scaleY);
+  // Guide crop canvas (with 25% safety margin)
+  let cropCanvas = null;
+  if (guide) {
+    const videoRect = video.getBoundingClientRect();
+    const guideRect = guide.getBoundingClientRect();
 
-  const canvas = document.createElement('canvas');
-  canvas.width = cropW;
-  canvas.height = cropH;
-  const ctx = canvas.getContext('2d');
+    if (videoRect.width > 0 && videoRect.height > 0) {
+      const scaleX = vW / videoRect.width;
+      const scaleY = vH / videoRect.height;
 
-  // Draw cropped frame
-  ctx.drawImage(video, cropX, cropY, cropW, cropH, 0, 0, cropW, cropH);
+      const padX = guideRect.width * 0.25;
+      const padY = guideRect.height * 0.35;
 
-  // Preprocess: Grayscale + Threshold (Binarize) for clear text
-  try {
-    const imgData = ctx.getImageData(0, 0, cropW, cropH);
-    const data = imgData.data;
-    for (let i = 0; i < data.length; i += 4) {
-      // Luminance formula
-      const gray = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
-      // Adaptive-like high contrast threshold
-      const val = gray > 120 ? 255 : 0;
-      data[i] = val;
-      data[i + 1] = val;
-      data[i + 2] = val;
+      const gLeft = Math.max(0, guideRect.left - videoRect.left - padX);
+      const gTop = Math.max(0, guideRect.top - videoRect.top - padY);
+      const gWidth = guideRect.width + (padX * 2);
+      const gHeight = guideRect.height + (padY * 2);
+
+      const cropX = Math.max(0, gLeft * scaleX);
+      const cropY = Math.max(0, gTop * scaleY);
+      const cropW = Math.min(vW - cropX, gWidth * scaleX);
+      const cropH = Math.min(vH - cropY, gHeight * scaleY);
+
+      if (cropW > 20 && cropH > 20) {
+        cropCanvas = document.createElement('canvas');
+        cropCanvas.width = cropW;
+        cropCanvas.height = cropH;
+        const cropCtx = cropCanvas.getContext('2d');
+        cropCtx.drawImage(video, cropX, cropY, cropW, cropH, 0, 0, cropW, cropH);
+      }
     }
-    ctx.putImageData(imgData, 0, 0);
-  } catch (e) {
-    // If CORS or getImageData fails, proceed with raw cropped canvas
   }
 
-  return canvas;
+  return { cropCanvas, fullCanvas };
 }
 
 /**
@@ -159,13 +195,7 @@ export async function runOCR(source) {
   const worker = await getOCRWorker();
   const ret = await worker.recognize(source);
   const text = ret.data.text || '';
-
-  // Extract all 6-digit Indian pincodes (first digit 1-9)
-  const matches = text.match(/\b[1-9][0-9]{5}\b/g);
-  if (!matches) return [];
-
-  // Remove duplicates while keeping order
-  return [...new Set(matches)];
+  return extractPincodes(text);
 }
 
 /**
@@ -176,27 +206,37 @@ export async function triggerScannerCapture(onPincodeSelected) {
   const captureBtn = document.getElementById('scanner-capture-btn');
 
   if (captureBtn) captureBtn.disabled = true;
-  if (statusText) statusText.textContent = 'Reading image with OCR...';
+  if (statusText) statusText.textContent = 'Scanning for 6-digit pincode...';
 
   try {
-    const canvas = captureAndPreprocessFrame();
-    if (!canvas) throw new Error('Could not capture frame from camera.');
+    const frames = captureFrames();
+    if (!frames || !frames.fullCanvas) throw new Error('Could not capture frame from camera.');
 
-    const detected = await runOCR(canvas);
+    let detected = [];
+
+    // Stage 1: Check cropped guide region first
+    if (frames.cropCanvas) {
+      detected = await runOCR(frames.cropCanvas);
+    }
+
+    // Stage 2: Fallback to full camera frame if not in crop
+    if (detected.length === 0) {
+      if (statusText) statusText.textContent = 'Analyzing full camera feed...';
+      detected = await runOCR(frames.fullCanvas);
+    }
 
     if (detected.length === 0) {
-      if (statusText) statusText.textContent = 'No 6-digit pincode found. Try holding closer or steady.';
+      if (statusText) statusText.textContent = 'No 6-digit pincode found. Hold steady and ensure good lighting.';
       showToast('No pincode detected. Please try again.', 'warning');
       return;
     }
 
+    const cb = onPincodeSelected || activePincodeCallback;
     if (detected.length === 1) {
-      // Exactly one found!
       closeCameraScanner();
-      if (onPincodeSelected) onPincodeSelected(detected[0]);
+      if (cb) cb(detected[0]);
     } else {
-      // Multiple candidates detected (e.g. phone number parts & pincode)
-      showCandidateSelection(detected, onPincodeSelected);
+      showCandidateSelection(detected, cb);
     }
 
   } catch (err) {

@@ -1,5 +1,5 @@
 # 📦 Omkar Enterprises – Modern Logistics & Courier Web Application
-> **Domestic (Pan-India) & International (220+ Countries) Courier Services**  
+> **Domestic (Pan-India 19,000+ Pincodes) & International (220+ Territories) Courier Services**  
 > Built with Pure Vanilla HTML5, CSS3, ES Modules, and Firebase Modular SDK v10+ (Static Web App for GitHub Pages on Free Firebase Spark Plan).
 
 ---
@@ -27,8 +27,8 @@ Omkar Enterprises is an enterprise-grade, static web application crafted for a h
 - **Zero Framework Footprint**: Pure HTML5, Modern CSS (custom properties, glassmorphism, responsive grid), and Vanilla JavaScript (ES Modules).
 - **Firebase Modular SDK v10+**: Direct CDN imports (`https://www.gstatic.com/firebasejs/13.1.0/...`), tree-shaken and fast.
 - **Two Distinct Sections**:
-  - **Domestic India**: Real-time 6-digit Pincode Serviceability search with in-memory caching and browser-based OCR camera scanner.
-  - **International**: Coverage across 220+ countries with region filtering, allowed vs. prohibited item categorizations, and one-tap WhatsApp / direct call integration.
+  - **Domestic India**: Real-time 6-digit Pincode Serviceability search with in-memory caching and browser-based OCR camera scanner across 19,000+ Indian pincodes.
+  - **International**: Coverage across 220+ territories with region filtering, allowed vs. prohibited item categorizations, and one-tap WhatsApp / direct call integration.
 - **Role-Based Access**:
   - **Guests**: Complete public access to serviceability checkers, international directory, service catalogs, company info, and contact/enquiry forms.
   - **Registered Users**: Optional sign-in via Email/Password or Google Sign-In, saved address book, pincode search history & favorites, pickup request booking, and enquiry status tracking.

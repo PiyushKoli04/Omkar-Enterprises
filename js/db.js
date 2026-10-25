@@ -24,28 +24,41 @@ export async function getBusinessSettings() {
 
   try {
     const snap = await getDoc(doc(db, 'settings', 'business'));
+    const DEFAULT_BIZ = {
+      phone: '+919619628045',
+      whatsapp: '919619628045',
+      email: 'vanitaharesh2005@gmail.com',
+      address: 'Omkar Enterprises Hub, Nerul, Navi Mumbai, Maharashtra 400706',
+      workingHours: 'Mon-Sat: 9:00 AM - 8:00 PM (Sunday Closed)',
+      companyName: 'Omkar Enterprises',
+      tagline: 'Domestic & International Courier Service',
+      announcement: '',
+      socialLinks: {}
+    };
+
     if (snap.exists()) {
-      businessSettingsCache = snap.data();
-    } else {
-      // Return defaults if not yet configured
+      const d = snap.data();
       businessSettingsCache = {
-        phone: '',
-        whatsapp: '',
-        email: '',
-        address: '',
-        workingHours: 'Mon-Sat: 9 AM - 7 PM',
-        companyName: 'Omkar Enterprises',
-        tagline: 'Domestic & International Courier Service',
-        announcement: '',
-        socialLinks: {}
+        ...DEFAULT_BIZ,
+        ...d,
+        phone: d.phone || DEFAULT_BIZ.phone,
+        whatsapp: d.whatsapp || DEFAULT_BIZ.whatsapp,
+        email: d.email || DEFAULT_BIZ.email,
+        address: d.address || DEFAULT_BIZ.address,
       };
+    } else {
+      businessSettingsCache = DEFAULT_BIZ;
     }
     return businessSettingsCache;
   } catch (err) {
     console.error('Error fetching business settings:', err);
     return {
-      phone: '', whatsapp: '', email: '', address: '',
-      workingHours: '', companyName: 'Omkar Enterprises',
+      phone: '+919619628045',
+      whatsapp: '919619628045',
+      email: 'vanitaharesh2005@gmail.com',
+      address: 'Omkar Enterprises Hub, Nerul, Navi Mumbai, Maharashtra 400706',
+      workingHours: 'Mon-Sat: 9:00 AM - 8:00 PM',
+      companyName: 'Omkar Enterprises',
       tagline: 'Domestic & International Courier Service'
     };
   }
@@ -299,7 +312,7 @@ export async function batchWrite(collectionName, items, onProgress) {
 export async function deleteCollection(collectionName, batchSize = 500) {
   const collRef = collection(db, collectionName);
   const q = query(collRef, limit(batchSize));
-  
+
   let deleted = 0;
   let snap = await getDocs(q);
 

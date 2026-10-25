@@ -51,31 +51,23 @@ export const ICONS = {
 };
 
 // ==========================================
-// THEME MANAGEMENT
+// THEME MANAGEMENT (Clean Light Mode)
 // ==========================================
 export function initTheme() {
-  const saved = localStorage.getItem('oe-theme');
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  const theme = saved || (prefersDark ? 'dark' : 'light');
-  document.documentElement.setAttribute('data-theme', theme);
-  return theme;
+  document.documentElement.setAttribute('data-theme', 'light');
+  try {
+    localStorage.setItem('oe-theme', 'light');
+  } catch (e) { }
+  return 'light';
 }
 
 export function toggleTheme() {
-  const current = document.documentElement.getAttribute('data-theme');
-  const next = current === 'dark' ? 'light' : 'dark';
-  document.documentElement.setAttribute('data-theme', next);
-  localStorage.setItem('oe-theme', next);
-  updateThemeIcon(next);
-  return next;
+  document.documentElement.setAttribute('data-theme', 'light');
+  return 'light';
 }
 
-export function updateThemeIcon(theme) {
-  const btns = document.querySelectorAll('.theme-toggle');
-  btns.forEach(btn => {
-    btn.innerHTML = theme === 'dark' ? ICONS.sun : ICONS.moon;
-    btn.setAttribute('aria-label', theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
-  });
+export function updateThemeIcon() {
+  // Dark mode removed per user request
 }
 
 // ==========================================
@@ -101,7 +93,7 @@ function ensureToastContainer() {
  */
 export function showToast(message, type = 'info', duration = 4000) {
   const container = ensureToastContainer();
-  
+
   const iconMap = {
     success: ICONS.check,
     error: ICONS.x,
@@ -223,8 +215,8 @@ export function getBasePath() {
   // Works on both root domain and /repo-name/ subpath
   const path = window.location.pathname;
   // Find the index of common page files
-  const pages = ['index.html', 'domestic.html', 'international.html', 'services.html', 
-                 'about.html', 'contact.html', 'login.html', 'account.html', 'admin/'];
+  const pages = ['index.html', 'domestic.html', 'international.html', 'services.html',
+    'about.html', 'contact.html', 'login.html', 'account.html', 'admin/'];
   for (const page of pages) {
     const idx = path.indexOf(page);
     if (idx > 0) return path.substring(0, idx);
@@ -263,9 +255,14 @@ export function injectHeader() {
 
   headerEl.innerHTML = `
     <div class="header-inner">
-      <a href="index.html" class="header-logo" aria-label="Home">
-        <img src="assets/logo.png" alt="Omkar Enterprises" width="140" height="36">
-      </a>
+      <div class="flex items-center gap-2">
+        <button class="mobile-menu-btn" id="mobile-menu-toggle" aria-label="Open navigation menu">
+          ${ICONS.menu}
+        </button>
+        <a href="index.html" class="header-logo" aria-label="Home">
+          <img src="assets/logo.png" alt="Omkar Enterprises" width="140" height="36">
+        </a>
+      </div>
       
       <nav class="desktop-nav" aria-label="Main navigation">
         <a href="index.html" class="nav-link">Home</a>
@@ -277,8 +274,6 @@ export function injectHeader() {
       </nav>
 
       <div class="header-actions">
-        <button class="theme-toggle" aria-label="Toggle theme">${ICONS.moon}</button>
-        
         <a href="login.html" class="btn btn-sm btn-primary guest-only" id="header-login-btn">
           ${ICONS.login} <span>Login</span>
         </a>
@@ -290,6 +285,67 @@ export function injectHeader() {
         <a href="admin/index.html" class="btn btn-sm btn-ghost admin-only" id="header-admin-btn">
           ${ICONS.shield} <span>Admin</span>
         </a>
+      </div>
+    </div>
+
+    <!-- Mobile Slide-Over Navigation Drawer -->
+    <div class="mobile-drawer-backdrop" id="mobile-drawer-backdrop">
+      <div class="mobile-drawer" id="mobile-drawer" role="dialog" aria-modal="true" aria-label="Mobile Navigation">
+        <div class="mobile-drawer-header">
+          <a href="index.html" class="header-logo">
+            <img src="assets/logo.png" alt="Omkar Enterprises" width="130" height="34">
+          </a>
+          <button class="btn btn-ghost btn-sm close-drawer-btn" id="close-drawer-btn" aria-label="Close navigation menu">
+            ${ICONS.x}
+          </button>
+        </div>
+
+        <nav class="mobile-drawer-nav">
+          <a href="index.html" class="mobile-nav-link nav-link">
+            ${ICONS.home} <span>Home</span>
+          </a>
+          <a href="domestic.html" class="mobile-nav-link nav-link">
+            ${ICONS.package} <span>Domestic Pincode Checker</span>
+          </a>
+          <a href="international.html" class="mobile-nav-link nav-link">
+            ${ICONS.globe} <span>International Shipping (220+)</span>
+          </a>
+          <a href="services.html" class="mobile-nav-link nav-link">
+            ${ICONS.truck} <span>All Courier Services</span>
+          </a>
+          <a href="about.html" class="mobile-nav-link nav-link">
+            ${ICONS.info} <span>About Us</span>
+          </a>
+          <a href="contact.html" class="mobile-nav-link nav-link">
+            ${ICONS.mail} <span>Contact & Hub Details</span>
+          </a>
+          
+          <div class="mobile-drawer-divider"></div>
+          
+          <a href="account.html#pickup" class="mobile-nav-link">
+            ${ICONS.plus} <span>Schedule Doorstep Pickup</span>
+          </a>
+          <a href="account.html" class="mobile-nav-link auth-only">
+            ${ICONS.user} <span>My Account & Addresses</span>
+          </a>
+          <a href="login.html" class="mobile-nav-link guest-only">
+            ${ICONS.login} <span>Sign In / Register</span>
+          </a>
+          <a href="admin/index.html" class="mobile-nav-link admin-only">
+            ${ICONS.shield} <span>Admin Operations Center</span>
+          </a>
+        </nav>
+
+        <div class="mobile-drawer-footer">
+          <div class="flex gap-2 w-full">
+            <a href="contact.html" class="btn btn-secondary btn-sm flex-1">
+              ${ICONS.phone} Call
+            </a>
+            <a href="contact.html" class="btn btn-whatsapp btn-sm flex-1">
+              ${ICONS.whatsapp} WhatsApp
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   `;
@@ -311,9 +367,11 @@ export function injectBottomNav() {
       ${ICONS.package}
       <span>Domestic</span>
     </a>
-    <a href="domestic.html#scanner" class="bottom-nav-item bottom-nav-center" aria-label="Scan Pincode">
-      ${ICONS.camera}
-    </a>
+    <div class="bottom-nav-center-wrap">
+      <a href="domestic.html#scanner" class="bottom-nav-center" aria-label="Scan Pincode">
+        ${ICONS.camera}
+      </a>
+    </div>
     <a href="international.html" class="bottom-nav-item nav-link" aria-label="International">
       ${ICONS.globe}
       <span>Int'l</span>
@@ -342,7 +400,7 @@ export function injectFooter(businessData = {}) {
       <div class="footer-grid">
         <div class="footer-brand">
           <img src="assets/logo.png" alt="Omkar Enterprises" width="160" height="42">
-          <p>Reliable domestic and international courier services. Delivering across India and 220+ countries worldwide.</p>
+          <p>Reliable domestic and international courier services. Delivering across India and 220+ territories worldwide.</p>
           <div class="flex gap-3 mt-4">
             ${phone ? `<a href="tel:${phone}" class="btn btn-sm btn-call" aria-label="Call us">${ICONS.phone}</a>` : ''}
             ${whatsapp ? `<a href="https://wa.me/${whatsapp}" target="_blank" class="btn btn-sm btn-whatsapp" aria-label="WhatsApp">${ICONS.whatsapp}</a>` : ''}
@@ -374,9 +432,9 @@ export function injectFooter(businessData = {}) {
         <div>
           <h4 class="footer-heading">Contact</h4>
           <div class="footer-links">
-            ${phone ? `<a href="tel:${phone}">${ICONS.phone} ${phone}</a>` : ''}
-            ${email ? `<a href="mailto:${email}">${ICONS.mail} ${email}</a>` : ''}
-            ${address ? `<p style="font-size:var(--fs-xs);color:var(--text-secondary);margin-top:var(--space-2);">${ICONS.mapPin} ${escapeHtml(address)}</p>` : ''}
+            ${phone ? `<a href="tel:${phone}"><span class="footer-icon-inline">${ICONS.phone}</span><span>${phone}</span></a>` : ''}
+            ${email ? `<a href="mailto:${email}"><span class="footer-icon-inline">${ICONS.mail}</span><span>${email}</span></a>` : ''}
+            ${address ? `<p class="footer-address"><span class="footer-icon-inline">${ICONS.mapPin}</span><span>${escapeHtml(address)}</span></p>` : ''}
           </div>
         </div>
       </div>
@@ -392,17 +450,10 @@ export function injectFooter(businessData = {}) {
 // INIT ALL UI
 // ==========================================
 export function initUI() {
-  const theme = initTheme();
-  updateThemeIcon(theme);
+  initTheme();
   injectHeader();
   injectBottomNav();
   initModals();
-
-  // Theme toggle clicks
-  document.addEventListener('click', (e) => {
-    const btn = e.target.closest('.theme-toggle');
-    if (btn) toggleTheme();
-  });
 
   // Highlight active nav
   highlightActiveNav();
@@ -412,4 +463,18 @@ export function initUI() {
 
   // Accordions
   initAccordions();
+
+  // Mobile Drawer Toggle
+  document.addEventListener('click', (e) => {
+    const backdrop = document.getElementById('mobile-drawer-backdrop');
+    if (!backdrop) return;
+
+    if (e.target.closest('#mobile-menu-toggle')) {
+      backdrop.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    } else if (e.target.closest('#close-drawer-btn') || e.target === backdrop || e.target.closest('.mobile-nav-link')) {
+      backdrop.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  });
 }

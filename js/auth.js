@@ -67,30 +67,45 @@ export function getIsAdmin() {
   return isAdmin;
 }
 
+export const ADMIN_EMAILS = [
+  'vanitaharesh2005@gmail.com',
+  'admin@omkarenterprises.com',
+  'omkarenterprises.admin@gmail.com'
+];
+
 /**
  * Create or update user document in Firestore
  */
 async function ensureUserDoc(user) {
   const userRef = doc(db, 'users', user.uid);
+  const email = (user.email || '').toLowerCase();
+  const isTargetAdmin = ADMIN_EMAILS.includes(email);
+  const defaultRole = isTargetAdmin ? 'admin' : 'user';
+
   const userSnap = await getDoc(userRef);
 
   if (!userSnap.exists()) {
     // New user — create document
-    await setDoc(userRef, {
+    const newDoc = {
       email: user.email || '',
-      displayName: user.displayName || '',
+      displayName: user.displayName || (isTargetAdmin ? 'Admin' : ''),
       phone: user.phoneNumber || '',
       photoURL: user.photoURL || '',
-      role: 'user', // Default role
+      role: defaultRole,
       defaultAddress: '',
       createdAt: serverTimestamp(),
       lastLogin: serverTimestamp()
-    });
-    return { role: 'user' };
+    };
+    await setDoc(userRef, newDoc);
+    return newDoc;
   } else {
-    // Existing user — update last login
-    await setDoc(userRef, { lastLogin: serverTimestamp() }, { merge: true });
-    return userSnap.data();
+    // Existing user — if admin email, ensure role is admin
+    const updates = { lastLogin: serverTimestamp() };
+    if (isTargetAdmin && userSnap.data().role !== 'admin') {
+      updates.role = 'admin';
+    }
+    await setDoc(userRef, updates, { merge: true });
+    return { ...userSnap.data(), ...updates };
   }
 }
 
@@ -103,11 +118,11 @@ onAuthStateChanged(auth, async (user) => {
     try {
       const userData = await ensureUserDoc(user);
       currentUserData = userData;
-      isAdmin = userData.role === 'admin';
+      isAdmin = userData.role === 'admin' || (user.email && ADMIN_EMAILS.includes(user.email.toLowerCase()));
     } catch (err) {
       console.error('Error fetching user data:', err);
       currentUserData = {};
-      isAdmin = false;
+      isAdmin = (user.email && ADMIN_EMAILS.includes(user.email.toLowerCase()));
     }
 
     // Update body classes
@@ -214,12 +229,52 @@ export async function logout() {
   try {
     await signOut(auth);
     showToast('Signed out successfully.', 'info');
-    // Redirect to home
-    window.location.href = 'index.html';
   } catch (err) {
     showToast('Error signing out. Please try again.', 'error');
   }
 }
+
+/**
+ * Initialize / ensure auth listener is active
+ */
+export function initAuth() {
+  return auth;
+}
+
+/**
+ * Get role for given UID from user doc or in-memory state
+ */
+export async function getUserRole(uid) {
+  const user = getCurrentUser();
+  if (user && user.email && ADMIN_EMAILS.includes(user.email.toLowerCase())) {
+    return 'admin';
+  }
+  if (!uid && user) uid = user.uid;
+  if (!uid) return 'guest';
+  if (currentUser && currentUser.uid === uid && currentUserData?.role) {
+    return currentUserData.role;
+  }
+  try {
+    const snap = await getDoc(doc(db, 'users', uid));
+    if (snap.exists()) {
+      const d = snap.data();
+      if (d.email && ADMIN_EMAILS.includes(d.email.toLowerCase())) return 'admin';
+      return d.role || 'user';
+    }
+  } catch (e) {
+    console.error('Error fetching role:', e);
+  }
+  if (user && user.email && ADMIN_EMAILS.includes(user.email.toLowerCase())) {
+    return 'admin';
+  }
+  return 'user';
+}
+
+// Aliases for alternate naming conventions
+export const loginWithEmail = loginEmail;
+export const registerWithEmail = registerEmail;
+export const loginWithGoogle = loginGoogle;
+export const logoutUser = logout;
 
 /**
  * Require auth — redirect to login if not authenticated

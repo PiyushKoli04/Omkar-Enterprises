@@ -152,8 +152,8 @@ export async function renderCountriesList(container, countries, filterText = '',
   if (!container) return;
 
   const business = await getBusinessSettings();
-  const whatsapp = business.whatsapp || '919876543210';
-  const phone = business.phone || '+919876543210';
+  const whatsapp = business.whatsapp || '919619628045';
+  const phone = business.phone || '+919619628045';
 
   const normalizedFilter = filterText.toLowerCase().trim();
 
@@ -168,8 +168,8 @@ export async function renderCountriesList(container, countries, filterText = '',
   if (filtered.length === 0) {
     container.innerHTML = `
       <div class="card p-8 text-center text-secondary col-span-full">
-        <p class="text-lg font-bold mb-2">No countries match your search</p>
-        <p class="text-sm">We deliver to 220+ countries. Please contact our international booking desk directly:</p>
+        <p class="text-lg font-bold mb-2">No destinations match your search</p>
+        <p class="text-sm">We deliver to 220+ territories worldwide. Please contact our international booking desk directly:</p>
         <div class="flex justify-center gap-3 mt-4">
           <a href="${getWhatsAppUrl(whatsapp, 'Hello, I have an international shipping enquiry.')}" target="_blank" class="btn btn-whatsapp">
             ${ICONS.whatsapp} <span>WhatsApp Us</span>
@@ -184,7 +184,7 @@ export async function renderCountriesList(container, countries, filterText = '',
   }
 
   container.innerHTML = filtered.map(country => {
-    const flag = getFlagEmoji(country.code) || '🌐';
+    const flag = getFlagEmoji(country.code) || `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`;
     const waText = `Hello Omkar Enterprises, I want to book an international courier to ${country.name}. Please guide me on rates and documentation.`;
     const waUrl = getWhatsAppUrl(whatsapp, waText);
 

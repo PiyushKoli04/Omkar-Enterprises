@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Admin Operations Center – Omkar Enterprises</title>
+
+  <link rel="icon" type="image/png" href="../assets/logo.png">
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/pages.css">
+  <link rel="stylesheet" href="../css/print.css">
+
+  <!-- SheetJS for Browser-based Excel & CSV Ingestion -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+</head>
+<body class="bg-surface-alt">
+
+  <!-- Top Admin Bar -->
+  <header class="header bg-surface border-b border-border py-3 px-4 sm:px-8 flex items-center justify-between no-print">
+    <div class="flex items-center gap-3">
+      <a href="../index.html">
+        <img src="../assets/logo.png" alt="Omkar Enterprises" height="32" class="h-8">
+      </a>
+      <span class="badge badge-warning font-bold">Admin Portal</span>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <nav class="hidden md:flex items-center gap-3 text-xs font-semibold mr-2">
+        <a href="../index.html" class="text-secondary hover:text-primary">Home</a>
+        <a href="../domestic.html" class="text-secondary hover:text-primary">Domestic</a>
+        <a href="../international.html" class="text-secondary hover:text-primary">International</a>
+        <a href="../services.html" class="text-secondary hover:text-primary">Services</a>
+        <a href="../contact.html" class="text-secondary hover:text-primary">Contact</a>
+        <a href="../account.html" class="text-secondary hover:text-primary">Account</a>
+      </nav>
+      <a href="../index.html" class="btn btn-ghost btn-sm md:hidden">← Site</a>
+      <button id="admin-logout-btn" class="btn btn-outline btn-sm">Sign Out</button>
+    </div>
+  </header>
+
+  <!-- Main Admin Layout -->
+  <div class="container py-8 no-print">
+
+    <!-- Segmented Admin Tabs -->
+    <div class="mb-6 overflow-x-auto">
+      <div class="segmented-tabs" role="tablist">
+        <button class="adm-tab-btn active" data-tab="overview">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+          <span>Overview</span>
+        </button>
+        <button class="adm-tab-btn" data-tab="labels">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+          <span>Address Labels</span>
+        </button>
+        <button class="adm-tab-btn" data-tab="pincodes">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <span>Bulk Pincodes</span>
+        </button>
+        <button class="adm-tab-btn" data-tab="enquiries">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <span>Enquiries</span>
+        </button>
+        <button class="adm-tab-btn" data-tab="pickups">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+          <span>Pickups</span>
+        </button>
+        <button class="adm-tab-btn" data-tab="settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <span>Settings</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- TAB 1: OVERVIEW -->
+    <div id="tab-overview" class="adm-tab-content">
+      <div class="grid grid-3 gap-6 mb-8">
+        <div class="card p-6 shadow-sm">
+          <span class="text-xs text-secondary font-bold uppercase">Customer Enquiries</span>
+          <h3 class="text-3xl font-extrabold mt-2 text-primary" id="stat-enquiries">--</h3>
+          <p class="text-xs text-tertiary mt-1">Total public enquiries logged</p>
+        </div>
+
+        <div class="card p-6 shadow-sm">
+          <span class="text-xs text-secondary font-bold uppercase">Doorstep Pickups</span>
+          <h3 class="text-3xl font-extrabold mt-2 text-primary" id="stat-pickups">--</h3>
+          <p class="text-xs text-tertiary mt-1">Pending & scheduled pickups</p>
+        </div>
+
+        <div class="card p-6 shadow-sm">
+          <span class="text-xs text-secondary font-bold uppercase">Labels Generated</span>
+          <h3 class="text-3xl font-extrabold mt-2 text-primary" id="stat-labels">--</h3>
+          <p class="text-xs text-tertiary mt-1">Archived address labels</p>
+        </div>
+      </div>
+
+      <div class="card p-6 shadow-sm">
+        <h3 class="text-lg font-bold mb-3">Quick Actions</h3>
+        <div class="flex gap-3 flex-wrap">
+          <button class="btn btn-primary btn-sm" onclick="document.querySelector('[data-tab=\'labels\']').click()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span>Generate Address Label</span>
+          </button>
+          <button class="btn btn-secondary btn-sm" onclick="document.querySelector('[data-tab=\'pincodes\']').click()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <span>Upload Pincodes</span>
+          </button>
+          <button class="btn btn-ghost btn-sm" onclick="document.querySelector('[data-tab=\'settings\']').click()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            <span>Edit Phone / WhatsApp</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: ADDRESS LABELS (PRINTABLE STANDARD) -->
+    <div id="tab-labels" class="adm-tab-content hidden">
+      <div class="grid grid-2 gap-8 items-start">
+        
+        <!-- Form -->
+        <div class="card p-6 shadow-sm">
+          <h3 class="text-lg font-bold mb-4">Create Consignment Label</h3>
+          
+          <form id="label-form">
+            <h4 class="text-xs font-bold uppercase text-primary mb-2">Destination (TO)</h4>
+            <div class="mb-3">
+              <label class="form-label text-xs">Consignee Full Name *</label>
+              <input type="text" id="lbl-to-name" class="form-input" placeholder="e.g. Amit Sharma" required>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label text-xs">Destination Address (Multi-line) *</label>
+              <textarea id="lbl-to-address" class="form-input" rows="3" placeholder="Flat / House no, Street, Landmark, City..." required></textarea>
+            </div>
+
+            <div class="grid grid-2 gap-3 mb-4">
+              <div>
+                <label class="form-label text-xs">Destination Pincode *</label>
+                <input type="text" id="lbl-to-pincode" class="form-input" maxlength="6" inputmode="numeric" placeholder="e.g. 400050" required>
+              </div>
+              <div>
+                <label class="form-label text-xs">Contact Number(s) *</label>
+                <input type="text" id="lbl-to-phone" class="form-input" placeholder="e.g. +91 98765 43210" required>
+              </div>
+            </div>
+
+            <h4 class="text-xs font-bold uppercase text-primary mb-2 border-t border-border pt-4">Consigner (FROM)</h4>
+            <div class="mb-3">
+              <label class="form-label text-xs">Consigner Name *</label>
+              <input type="text" id="lbl-from-name" class="form-input" value="Omkar Enterprises" required>
+            </div>
+
+            <div class="mb-4">
+              <label class="form-label text-xs">Consigner Area / Short Address *</label>
+              <textarea id="lbl-from-area" class="form-input" rows="2" required>Shop No. 4, Courier Hub, Andheri East, Mumbai</textarea>
+            </div>
+
+            <div class="grid grid-2 gap-3 mb-6 border-t border-border pt-4">
+              <div>
+                <label class="form-label text-xs">Paper Format</label>
+                <select id="lbl-paper-size" class="form-input">
+                  <option value="4x6">4" x 6" Thermal Adhesive</option>
+                  <option value="a4">Standard A4 Sheet</option>
+                  <option value="a5">A5 Half Sheet</option>
+                </select>
+              </div>
+              <div class="flex items-center gap-2 pt-4">
+                <input type="checkbox" id="lbl-show-border" checked>
+                <label for="lbl-show-border" class="text-xs cursor-pointer">Include Outer Border</label>
+              </div>
+            </div>
+
+            <div class="flex gap-3">
+              <button type="submit" id="btn-print-label" class="btn btn-primary flex-1">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                <span>Print Label</span>
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Live Preview -->
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-sm font-bold uppercase text-secondary">Live Print Preview</h3>
+            <span class="text-xs text-tertiary">Formatted per strict courier spec</span>
+          </div>
+          <div id="label-preview-container" class="border border-border p-4 bg-white rounded shadow-sm">
+            <!-- Rendered by js/labels.js -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Saved Label History -->
+      <div class="card p-6 shadow-sm mt-8">
+        <h3 class="text-base font-bold mb-4">Recently Created Labels</h3>
+        <div id="labels-history-list" class="space-y-2">
+          <span class="text-xs text-secondary">Loading history...</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: BULK PINCODE UPLOAD (SHEETJS) -->
+    <div id="tab-pincodes" class="adm-tab-content hidden">
+      <div class="card p-6 shadow-sm max-w-3xl">
+        <h3 class="text-lg font-bold mb-2">Bulk Ingest Pincodes from CSV / Excel</h3>
+        <p class="text-xs text-secondary mb-4">
+          Upload <code>PinCodeList.csv</code> or any Excel spreadsheet. Rows are validated, cleaned, and written to Firestore in batches of 500 documents with O(1) single-doc keys.
+        </p>
+
+        <div class="p-6 border-2 border-dashed border-border rounded-lg text-center mb-6">
+          <input type="file" id="pincode-file-input" accept=".csv, .xlsx, .xls" class="sr-only">
+          <label for="pincode-file-input" class="cursor-pointer">
+            <div class="mb-3 flex justify-center text-primary">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="40" height="40"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
+            </div>
+            <p class="text-sm font-bold text-primary">Click to select PinCodeList.csv or Excel sheet</p>
+            <p class="text-xs text-secondary mt-1">Supports columns: STATE NAME, Branch, PinCode, Area.Name, Delivery ?, Fast.Trk ?</p>
+          </label>
+        </div>
+
+        <!-- Preview & Progress Area -->
+        <div id="pincode-upload-preview" class="hidden mb-6">
+          <div class="flex items-center justify-between p-3 bg-surface border border-border rounded mb-4">
+            <div>
+              <p class="text-xs font-bold text-success" id="valid-rows-count">0 valid rows detected</p>
+              <p class="text-xs text-danger" id="error-rows-count">0 rows skipped</p>
+            </div>
+            
+            <div class="flex items-center gap-3">
+              <label class="text-xs flex items-center gap-1 cursor-pointer">
+                <input type="radio" name="upload-mode" value="merge" checked>
+                <span>Add / Update (Safe)</span>
+              </label>
+              <label class="text-xs flex items-center gap-1 cursor-pointer">
+                <input type="radio" name="upload-mode" value="replace">
+                <span>Replace All</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Progress Bar -->
+          <div id="upload-progress-wrapper" class="hidden mb-4">
+            <div class="w-full bg-border rounded-full h-3 overflow-hidden">
+              <div id="upload-progress-bar" class="bg-primary h-3 transition-all duration-300" style="width: 0%"></div>
+            </div>
+            <p id="upload-progress-text" class="text-xs text-secondary mt-1 text-center">Uploading to Firestore...</p>
+          </div>
+
+          <button type="button" id="start-upload-btn" class="btn btn-primary btn-block">
+            Start Batch Write to Firestore
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: CUSTOMER ENQUIRIES -->
+    <div id="tab-enquiries" class="adm-tab-content hidden">
+      <div class="card p-6 shadow-sm">
+        <h3 class="text-lg font-bold mb-4">Manage Public Enquiries</h3>
+        <div id="admin-enquiries-table" class="space-y-3">
+          <span class="text-xs text-secondary">Loading enquiries...</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 5: PICKUP REQUESTS -->
+    <div id="tab-pickups" class="adm-tab-content hidden">
+      <div class="card p-6 shadow-sm">
+        <h3 class="text-lg font-bold mb-4">Manage Pickup Requests</h3>
+        <div id="admin-pickups-table" class="space-y-3">
+          <span class="text-xs text-secondary">Loading pickup requests...</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 6: BUSINESS SETTINGS -->
+    <div id="tab-settings" class="adm-tab-content hidden">
+      <div class="card p-6 shadow-sm max-w-2xl">
+        <h3 class="text-lg font-bold mb-2">Website Business Settings</h3>
+        <p class="text-xs text-secondary mb-6">
+          Changes made here instantly update the website header, footer, contact buttons, and WhatsApp booking links without touching code.
+        </p>
+
+        <form id="business-settings-form">
+          <div class="grid grid-2 gap-4 mb-4">
+            <div>
+              <label class="form-label text-xs">Customer Calling Number *</label>
+              <input type="text" id="set-phone" class="form-input" placeholder="+91 98765 43210" required>
+            </div>
+            <div>
+              <label class="form-label text-xs">WhatsApp Number (e.g. 919876543210) *</label>
+              <input type="text" id="set-whatsapp" class="form-input" placeholder="919876543210" required>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label text-xs">Support Email *</label>
+            <input type="email" id="set-email" class="form-input" placeholder="support@omkarenterprises.com" required>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label text-xs">Hub / Office Physical Address *</label>
+            <textarea id="set-address" class="form-input" rows="3" required></textarea>
+          </div>
+
+          <div class="mb-6">
+            <label class="form-label text-xs">Operating Hours</label>
+            <input type="text" id="set-hours" class="form-input" placeholder="Mon-Sat: 9:00 AM - 8:00 PM">
+          </div>
+
+          <button type="submit" id="save-settings-btn" class="btn btn-primary">
+            Save Business Settings
+          </button>
+        </form>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Printable Container (Visible only when window.print() is called) -->
+  <div id="print-mount" class="only-print"></div>
+
+  <!-- Application Logic -->
+  <script type="module">
+    import { initUI, showToast, escapeHtml } from '../js/ui.js';
+    import { initAuth, onAuthChange, logoutUser, getCurrentUser, getUserRole } from '../js/auth.js';
+    import { 
+      requireAdminGuard, getDashboardStats, parsePincodeFile, executePincodeUpload 
+    } from '../js/admin.js';
+    import { formatAddressLabel, printLabel, saveLabelToFirestore, getRecentLabels, deleteSavedLabel } from '../js/labels.js';
+    import { getBusinessSettings, saveBusinessSettings, db, collection, getDocs, updateDoc, deleteDoc, doc, query, orderBy, limit } from '../js/db.js';
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      initUI();
+      initAuth();
+
+      // Guard check
+      onAuthChange(async (user) => {
+        if (!user) {
+          window.location.href = '../login.html?return=admin/index.html';
+          return;
+        }
+        const role = await getUserRole(user.uid);
+        if (role !== 'admin') {
+          showToast('Unauthorized. You must have admin role.', 'error');
+          window.location.href = '../index.html';
+          return;
+        }
+
+        // Initialize admin views
+        loadStats();
+        loadSettings();
+        loadLabelsHistory();
+        loadEnquiries();
+        loadPickups();
+      });
+
+      // Sign out
+      document.getElementById('admin-logout-btn').addEventListener('click', async () => {
+        await logoutUser();
+        window.location.href = '../index.html';
+      });
+
+      // Tabs
+      const tabBtns = document.querySelectorAll('.adm-tab-btn');
+      tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          tabBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+
+          const tabName = btn.dataset.tab;
+          document.querySelectorAll('.adm-tab-content').forEach(c => c.classList.add('hidden'));
+          const el = document.getElementById(`tab-${tabName}`);
+          if (el) el.classList.remove('hidden');
+        });
+      });
+
+      // Load Stats
+      async function loadStats() {
+        const stats = await getDashboardStats();
+        document.getElementById('stat-enquiries').textContent = stats.enquiriesCount;
+        document.getElementById('stat-pickups').textContent = stats.pickupCount;
+        document.getElementById('stat-labels').textContent = stats.labelsCount;
+      }
+
+      // Address Label Preview & Printing
+      const labelForm = document.getElementById('label-form');
+      const previewContainer = document.getElementById('label-preview-container');
+      const printMount = document.getElementById('print-mount');
+
+      function updateLabelPreview() {
+        const data = {
+          toName: document.getElementById('lbl-to-name').value || 'Consignee Name',
+          toAddress: document.getElementById('lbl-to-address').value || '123 Destination Road\nCity, State',
+          toPhone: document.getElementById('lbl-to-phone').value || '+91 98765 43210',
+          toPincode: document.getElementById('lbl-to-pincode').value || '400001',
+          fromName: document.getElementById('lbl-from-name').value || 'Omkar Enterprises',
+          fromArea: document.getElementById('lbl-from-area').value || 'Courier Hub, Andheri East, Mumbai',
+          paperSize: document.getElementById('lbl-paper-size').value,
+          showBorder: document.getElementById('lbl-show-border').checked
+        };
+
+        const html = formatAddressLabel(data);
+        previewContainer.innerHTML = html;
+        printMount.innerHTML = html;
+      }
+
+      labelForm.querySelectorAll('input, textarea, select').forEach(el => {
+        el.addEventListener('input', updateLabelPreview);
+      });
+      updateLabelPreview();
+
+      labelForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const data = {
+          toName: document.getElementById('lbl-to-name').value.trim(),
+          toAddress: document.getElementById('lbl-to-address').value.trim(),
+          toPhone: document.getElementById('lbl-to-phone').value.trim(),
+          toPincode: document.getElementById('lbl-to-pincode').value.trim(),
+          fromName: document.getElementById('lbl-from-name').value.trim(),
+          fromArea: document.getElementById('lbl-from-area').value.trim(),
+          paperSize: document.getElementById('lbl-paper-size').value,
+        };
+
+        try {
+          await saveLabelToFirestore(data);
+          loadLabelsHistory();
+          printLabel();
+        } catch (err) {
+          showToast('Failed to save label record.', 'error');
+        }
+      });
+
+      // Load Label History
+      async function loadLabelsHistory() {
+        const list = await getRecentLabels(15);
+        const container = document.getElementById('labels-history-list');
+        if (list.length === 0) {
+          container.innerHTML = `<span class="text-xs text-secondary">No labels saved yet.</span>`;
+          return;
+        }
+
+        container.innerHTML = list.map(l => `
+          <div class="card p-3 border border-border flex justify-between items-center text-xs">
+            <div>
+              <strong>To: ${escapeHtml(l.toName)}</strong> (${escapeHtml(l.toPincode || 'N/A')})
+              <p class="text-secondary truncate max-w-sm">${escapeHtml(l.toAddress)}</p>
+            </div>
+            <div class="flex gap-2">
+              <button class="btn btn-ghost btn-sm reprint-btn" data-json='${JSON.stringify(l).replace(/'/g, "&apos;")}'>Reprint</button>
+              <button class="btn btn-ghost btn-sm text-danger del-label-btn" data-id="${l.id}">Delete</button>
+            </div>
+          </div>
+        `).join('');
+
+        container.querySelectorAll('.reprint-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const data = JSON.parse(btn.dataset.json);
+            document.getElementById('lbl-to-name').value = data.toName;
+            document.getElementById('lbl-to-address').value = data.toAddress;
+            document.getElementById('lbl-to-phone').value = data.toPhone;
+            document.getElementById('lbl-to-pincode').value = data.toPincode;
+            updateLabelPreview();
+            printLabel();
+          });
+        });
+
+        container.querySelectorAll('.del-label-btn').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            if (confirm('Delete this saved label?')) {
+              await deleteSavedLabel(btn.dataset.id);
+              loadLabelsHistory();
+            }
+          });
+        });
+      }
+
+      // Pincode Bulk CSV / SheetJS parser
+      const fileInput = document.getElementById('pincode-file-input');
+      const previewArea = document.getElementById('pincode-upload-preview');
+      const startUploadBtn = document.getElementById('start-upload-btn');
+      const validCount = document.getElementById('valid-rows-count');
+      const errorCount = document.getElementById('error-rows-count');
+      const progressWrapper = document.getElementById('upload-progress-wrapper');
+      const progressBar = document.getElementById('upload-progress-bar');
+      const progressText = document.getElementById('upload-progress-text');
+
+      let parsedValidRows = [];
+
+      fileInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        showToast('Parsing spreadsheet in browser...', 'info');
+
+        try {
+          const res = await parsePincodeFile(file);
+          parsedValidRows = res.valid;
+
+          validCount.textContent = `${res.valid.length} valid 6-digit Indian pincodes ready to upload`;
+          errorCount.textContent = `${res.errors.length} invalid or empty rows skipped`;
+          previewArea.classList.remove('hidden');
+        } catch (err) {
+          showToast(err.message || 'Error parsing spreadsheet.', 'error');
+        }
+      });
+
+      startUploadBtn.addEventListener('click', async () => {
+        if (!parsedValidRows.length) return;
+
+        const mode = document.querySelector('input[name="upload-mode"]:checked').value;
+        if (mode === 'replace' && !confirm('WARNING: "Replace All" will overwrite existing pincodes. Continue?')) {
+          return;
+        }
+
+        startUploadBtn.disabled = true;
+        progressWrapper.classList.remove('hidden');
+
+        try {
+          await executePincodeUpload(parsedValidRows, mode, (done, total, msg) => {
+            const pct = Math.round((done / total) * 100);
+            progressBar.style.width = `${pct}%`;
+            progressText.textContent = msg;
+          });
+
+          showToast('Batch upload complete! Firestore updated.', 'success');
+        } catch (err) {
+          showToast('Batch upload error: ' + err.message, 'error');
+        } finally {
+          startUploadBtn.disabled = false;
+        }
+      });
+
+      // Business Settings Form
+      async function loadSettings() {
+        const s = await getBusinessSettings();
+        document.getElementById('set-phone').value = s.phone || '';
+        document.getElementById('set-whatsapp').value = s.whatsapp || '';
+        document.getElementById('set-email').value = s.email || '';
+        document.getElementById('set-address').value = s.address || '';
+        document.getElementById('set-hours').value = s.workingHours || '';
+      }
+
+      document.getElementById('business-settings-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const data = {
+          phone: document.getElementById('set-phone').value.trim(),
+          whatsapp: document.getElementById('set-whatsapp').value.trim(),
+          email: document.getElementById('set-email').value.trim(),
+          address: document.getElementById('set-address').value.trim(),
+          workingHours: document.getElementById('set-hours').value.trim()
+        };
+
+        try {
+          await saveBusinessSettings(data);
+          showToast('Business settings saved successfully!', 'success');
+        } catch (err) {
+          showToast('Failed to save settings.', 'error');
+        }
+      });
+
+      // Load Enquiries
+      async function loadEnquiries() {
+        const q = query(collection(db, 'enquiries'), orderBy('createdAt', 'desc'), limit(30));
+        const snap = await getDocs(q);
+        const container = document.getElementById('admin-enquiries-table');
+
+        if (snap.empty) {
+          container.innerHTML = `<span class="text-xs text-secondary">No customer enquiries found.</span>`;
+          return;
+        }
+
+        container.innerHTML = snap.docs.map(d => {
+          const e = d.data();
+          return `
+            <div class="card p-3 border border-border flex justify-between items-start text-xs">
+              <div>
+                <p class="font-bold">${escapeHtml(e.name)} • ${escapeHtml(e.phone)} (${escapeHtml(e.email || 'No email')})</p>
+                <p class="text-primary font-semibold mt-0.5">${escapeHtml(e.subject)}</p>
+                <p class="text-secondary mt-1">${escapeHtml(e.message)}</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="badge ${e.status === 'resolved' ? 'badge-success' : 'badge-warning'}">${e.status}</span>
+                <button class="btn btn-ghost btn-sm resolve-enq-btn" data-id="${d.id}">Mark Resolved</button>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        container.querySelectorAll('.resolve-enq-btn').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            await updateDoc(doc(db, 'enquiries', btn.dataset.id), { status: 'resolved' });
+            showToast('Marked as resolved', 'info');
+            loadEnquiries();
+          });
+        });
+      }
+
+      // Load Pickups
+      async function loadPickups() {
+        const q = query(collection(db, 'pickupRequests'), orderBy('createdAt', 'desc'), limit(30));
+        const snap = await getDocs(q);
+        const container = document.getElementById('admin-pickups-table');
+
+        if (snap.empty) {
+          container.innerHTML = `<span class="text-xs text-secondary">No pickup requests logged.</span>`;
+          return;
+        }
+
+        container.innerHTML = snap.docs.map(d => {
+          const p = d.data();
+          return `
+            <div class="card p-3 border border-border flex justify-between items-start text-xs">
+              <div>
+                <p class="font-bold">${escapeHtml(p.name)} • ${escapeHtml(p.phone)}</p>
+                <p class="text-secondary mt-0.5">${escapeHtml(p.pickupAddress)} (PIN: ${p.pincode})</p>
+                <p class="text-tertiary mt-1">Date: ${p.preferredDate} (${p.preferredTime}) • Type: ${p.parcelType}</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="badge ${p.status === 'completed' ? 'badge-success' : 'badge-warning'}">${p.status}</span>
+                <button class="btn btn-ghost btn-sm done-pickup-btn" data-id="${d.id}">Complete</button>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        container.querySelectorAll('.done-pickup-btn').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            await updateDoc(doc(db, 'pickupRequests', btn.dataset.id), { status: 'completed' });
+            showToast('Pickup marked completed', 'info');
+            loadPickups();
+          });
+        });
+      }
+
+    });
+  </script>
+</body>
+</html>

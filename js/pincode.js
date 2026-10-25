@@ -3,12 +3,13 @@
  * Omkar Enterprises – Domestic Courier Services
  */
 
-import { db, doc, getDoc, addDoc, collection, serverTimestamp } from './db.js';
+import { db, doc, getDoc, addDoc, collection, serverTimestamp, query, where, limit, getDocs } from './db.js';
 import { getCurrentUser } from './auth.js';
 import { addSearchHistory, toggleFavouritePincode, getFavouritePincodes } from './db.js';
 import { isValidPincode, formatPhone, getWhatsAppUrl } from './utils.js';
 import { showToast, ICONS, escapeHtml } from './ui.js';
 import { getBusinessSettings } from './db.js';
+import { lookupLocalPincode } from './pincode-db.js';
 
 // In-memory cache for fast lookups (saves Firestore reads)
 const pincodeCache = new Map();
@@ -32,6 +33,115 @@ function persistCache() {
 }
 
 /**
+ * Normalizes boolean and string flags like "YES", "Y", "TRUE", 1
+ */
+function isTruthyFlag(val) {
+  if (val === true || val === 1) return true;
+  if (!val) return false;
+  const s = String(val).trim().toUpperCase();
+  return s === 'YES' || s === 'Y' || s === 'TRUE' || s === '1' || s === 'SERVICEABLE';
+}
+
+/**
+ * Normalizes Firestore document to standard format regardless of column naming conventions
+ */
+function normalizePincodeDoc(data, pin) {
+  const delField = data.delivery !== undefined ? data.delivery 
+    : (data.serviceable !== undefined ? data.serviceable 
+    : (data.Delivery || data['Delivery ?'] || data.status || 'YES'));
+  
+  const ftField = data.fastTrack !== undefined ? data.fastTrack 
+    : (data['Fast.Trk'] || data['Fast.Trk ?'] || data.FastTrack || 'NO');
+
+  const isServiceable = isTruthyFlag(delField);
+  const isFastTrack = isTruthyFlag(ftField);
+  const area = data.area || data.Area || data['Area.Name'] || data.areaName || data.OfficeName || data.branch || data.Branch || 'Local Area';
+  const state = data.state || data.State || data['STATE NAME'] || data.stateName || 'India';
+  const branch = data.branch || data.Branch || '';
+  const district = data.district || data.District || branch || '';
+
+  return {
+    pincode: pin,
+    found: true,
+    serviceable: isServiceable,
+    area: area,
+    branch: branch,
+    district: district,
+    state: state,
+    fastTrack: isFastTrack,
+    cod: data.cod !== false,
+    prepaid: true,
+    tat: data.tat || (isFastTrack ? '1-2 Business Days' : '2-4 Business Days'),
+    remarks: data.remarks || (isServiceable ? 'Standard door-to-door delivery available' : 'Special pickup required')
+  };
+}
+
+// Background CSV loader for PinCodeList.csv
+let csvMapPromise = null;
+async function getCsvPincodeMap() {
+  if (csvMapPromise) return csvMapPromise;
+  csvMapPromise = (async () => {
+    try {
+      const res = await fetch('PinCodeList.csv');
+      if (!res.ok) return new Map();
+      const text = await res.text();
+      const map = new Map();
+      const lines = text.split(/\r?\n/);
+      let currentState = '';
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        if (line.includes('STATE NAME')) {
+          const parts = line.split(',').map(s => s.trim()).filter(Boolean);
+          const statePart = parts.find(p => p !== 'STATE NAME');
+          if (statePart) currentState = statePart;
+          continue;
+        }
+        if (!line || line.startsWith(',,,,,,')) continue;
+        const cols = line.split(',');
+        if (cols.length < 7) continue;
+
+        for (let c = 0; c < cols.length; c++) {
+          const rawVal = cols[c].trim().replace(/^"|"$/g, '');
+          if (/^[1-9][0-9]{5}$/.test(rawVal)) {
+            const pin = rawVal;
+            const branch = (cols[1] || '').trim().replace(/^"|"$/g, '');
+            const area = (cols[c + 1] || '').trim().replace(/^"|"$/g, '') || branch;
+            const del = (cols[c + 2] || '').trim().toUpperCase().replace(/^"|"$/g, '');
+            const ft = (cols[c + 3] || '').trim().toUpperCase().replace(/^"|"$/g, '');
+            const isDel = del === 'YES' || del === 'Y' || del === 'TRUE';
+            const isFt = ft === 'YES' || ft === 'Y' || ft === 'TRUE';
+
+            if (!map.has(pin) || isDel) {
+              map.set(pin, {
+                pincode: pin,
+                found: true,
+                serviceable: isDel,
+                area: area || branch || 'Local Area',
+                branch: branch,
+                district: branch,
+                state: currentState || 'India',
+                fastTrack: isFt,
+                cod: true,
+                prepaid: true,
+                tat: isFt ? '1-2 Business Days' : '2-4 Business Days',
+                remarks: isDel ? 'Standard door-to-door delivery available' : 'Special pickup required'
+              });
+            }
+            break;
+          }
+        }
+      }
+      return map;
+    } catch (err) {
+      console.warn('Local CSV fallback unavailable:', err);
+      return new Map();
+    }
+  })();
+  return csvMapPromise;
+}
+
+/**
  * Check serviceability for a 6-digit Indian Pincode
  * @param {string} pincode 
  * @returns {Promise<Object>} Result object
@@ -50,55 +160,77 @@ export async function checkPincodeServiceability(pincode) {
     return cached;
   }
 
-  // 2. Fetch single document from Firestore (O(1) read)
+  // 2. Instant Local Offline Database Match
+  const localMatch = lookupLocalPincode(pin);
+
+  let result = null;
+
+  // 3. Check Firestore for admin custom records or overrides
   try {
     const docRef = doc(db, 'pincodes', pin);
     const snap = await getDoc(docRef);
 
-    let result = null;
-
     if (snap.exists()) {
-      const data = snap.data();
-      result = {
-        pincode: pin,
-        found: true,
-        serviceable: data.delivery === true || data.serviceable === true,
-        area: data.area || data.areaName || data['Area.Name'] || '',
-        branch: data.branch || '',
-        district: data.district || '',
-        state: data.state || data['STATE NAME'] || '',
-        fastTrack: data.fastTrack === true || data['Fast.Trk'] === true,
-        cod: data.cod !== false,
-        prepaid: true,
-        tat: data.tat || '2-4 Business Days',
-        remarks: data.remarks || ''
-      };
+      result = normalizePincodeDoc(snap.data(), pin);
     } else {
-      // Pincode not in database
-      result = {
-        pincode: pin,
-        found: false,
-        serviceable: false,
-        area: 'Unknown Area',
-        district: '',
-        state: '',
-        tat: '',
-        remarks: 'Pincode not currently listed in our standard database.'
-      };
+      // 3b. Fallback query if stored with auto-ID or number type
+      const qNum = query(collection(db, 'pincodes'), where('pincode', '==', pin), limit(1));
+      const qSnap = await getDocs(qNum);
+      if (!qSnap.empty) {
+        result = normalizePincodeDoc(qSnap.docs[0].data(), pin);
+      } else {
+        const qNumInt = query(collection(db, 'pincodes'), where('pincode', '==', Number(pin)), limit(1));
+        const qSnapInt = await getDocs(qNumInt);
+        if (!qSnapInt.empty) {
+          result = normalizePincodeDoc(qSnapInt.docs[0].data(), pin);
+        }
+      }
     }
-
-    // Save to cache
-    pincodeCache.set(pin, result);
-    persistCache();
-
-    // Log to user history if logged in
-    recordUserHistory(pin, result);
-
-    return result;
   } catch (err) {
-    console.error('Pincode lookup error:', err);
-    throw new Error('Unable to connect to serviceability network. Please check your connection.');
+    console.warn('Firestore lookup warning, using built-in database:', err);
   }
+
+  // 4. If Firestore returned unserviceable or missing, but local database has it serviceable, prioritize local!
+  if ((!result || !result.serviceable) && localMatch && localMatch.serviceable) {
+    result = localMatch;
+  } else if (!result && localMatch) {
+    result = localMatch;
+  }
+
+  // 5. Fallback to raw CSV dataset if still not found
+  if (!result) {
+    try {
+      const csvMap = await getCsvPincodeMap();
+      if (csvMap && csvMap.has(pin)) {
+        result = csvMap.get(pin);
+      }
+    } catch (e) {
+      console.warn('CSV fallback error:', e);
+    }
+  }
+
+  // 4. Default unserviceable if not in any dataset
+  if (!result) {
+    result = {
+      pincode: pin,
+      found: false,
+      serviceable: false,
+      area: 'Unlisted Destination',
+      district: '',
+      state: 'India',
+      tat: '',
+      remarks: 'Pincode not currently listed in our standard database.'
+    };
+  }
+
+  // Save to cache
+  pincodeCache.set(pin, result);
+  persistCache();
+
+  // Log to user history if logged in
+  recordUserHistory(pin, result);
+
+  return result;
 }
 
 /**
@@ -125,8 +257,8 @@ export async function renderPincodeResult(container, result, options = {}) {
   if (!container) return;
 
   const business = await getBusinessSettings();
-  const phone = business.phone || '+919876543210';
-  const whatsapp = business.whatsapp || '919876543210';
+  const phone = business.phone || '+919619628045';
+  const whatsapp = business.whatsapp || '919619628045';
   const user = getCurrentUser();
 
   const isServiceable = result.serviceable;
@@ -150,6 +282,8 @@ export async function renderPincodeResult(container, result, options = {}) {
 
   const waLink = getWhatsAppUrl(whatsapp, waMessage);
 
+  const zapIconSvg = `<svg viewBox="0 0 24 24" fill="currentColor" width="13" height="13" style="margin-right:3px;"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>`;
+
   container.innerHTML = `
     <div class="card result-card ${statusClass} aos visible" role="region" aria-label="Serviceability Result">
       <div class="result-header">
@@ -159,7 +293,7 @@ export async function renderPincodeResult(container, result, options = {}) {
         <div class="result-title-group">
           <div class="flex items-center gap-2">
             <h3 class="result-title">${statusTitle}</h3>
-            ${result.fastTrack ? `<span class="badge badge-warning">⚡ FastTrack Available</span>` : ''}
+            ${result.fastTrack ? `<span class="badge badge-warning flex items-center">${zapIconSvg} FastTrack Available</span>` : ''}
           </div>
           <p class="result-pincode-label">Pincode: <strong>${escapeHtml(result.pincode)}</strong></p>
         </div>

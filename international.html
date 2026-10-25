@@ -26,7 +26,7 @@
         <span class="badge badge-primary mb-3">Global Logistics</span>
         <h1 class="text-3xl font-extrabold mb-3">International Courier Services</h1>
         <p class="text-secondary text-base">
-          Connecting India with 220+ countries and global territories. Safe, compliant door-to-door delivery with customs documentation assistance.
+          Connecting India with 220+ territories worldwide. Safe, compliant door-to-door delivery with customs documentation assistance.
         </p>
       </div>
     </section>
@@ -38,7 +38,7 @@
         <div class="card p-6 shadow-sm mb-8">
           <div class="flex gap-4 flex-wrap items-center justify-between mb-4">
             <div class="flex-1 min-w-[280px]">
-              <label for="country-search" class="form-label font-bold text-sm mb-1">Search Destination Country</label>
+              <label for="country-search" class="form-label font-bold text-sm mb-1">Search Destination (220+ Territories)</label>
               <div class="input-group">
                 <input 
                   type="text" 
@@ -78,15 +78,18 @@
 
         <!-- Section 2: Allowed vs Prohibited Items Guide -->
         <div class="card p-6 shadow-md mt-12">
-          <div class="flex gap-2 border-b border-border pb-3 mb-6" role="tablist">
-            <button class="btn btn-sm btn-primary item-tab-btn" data-tab="allowed" role="tab" aria-selected="true">
-              ✅ What You Can Send
+          <div class="segmented-tabs mb-6" role="tablist">
+            <button class="item-tab-btn active" data-tab="allowed" role="tab" aria-selected="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Allowed Items</span>
             </button>
-            <button class="btn btn-sm btn-outline item-tab-btn" data-tab="prohibited" role="tab" aria-selected="false">
-              🚫 Prohibited / Restricted Items
+            <button class="item-tab-btn" data-tab="prohibited" role="tab" aria-selected="false">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+              <span>Prohibited & Restricted</span>
             </button>
-            <button class="btn btn-sm btn-outline item-tab-btn" data-tab="customs" role="tab" aria-selected="false">
-              📄 Documentation & KYC
+            <button class="item-tab-btn" data-tab="customs" role="tab" aria-selected="false">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+              <span>Customs & KYC</span>
             </button>
           </div>
 
@@ -228,12 +231,10 @@
       tabBtns.forEach(btn => {
         btn.addEventListener('click', () => {
           tabBtns.forEach(b => {
-            b.classList.remove('btn-primary');
-            b.classList.add('btn-outline');
+            b.classList.remove('active');
             b.setAttribute('aria-selected', 'false');
           });
-          btn.classList.add('btn-primary');
-          btn.classList.remove('btn-outline');
+          btn.classList.add('active');
           btn.setAttribute('aria-selected', 'true');
 
           const tabName = btn.dataset.tab;

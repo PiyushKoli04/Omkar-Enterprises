@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="description" content="Omkar Enterprises – Reliable domestic and international courier services across India and 220+ countries. Check pincode serviceability, request pickups, and ship worldwide.">
+  <meta name="description" content="Omkar Enterprises – Reliable domestic and international courier services across India and 220+ territories. Check pincode serviceability, request pickups, and ship worldwide.">
   <meta name="keywords" content="courier service, domestic courier, international shipping, pincode checker, parcel delivery, India courier">
   <meta name="author" content="Omkar Enterprises">
   <meta name="theme-color" content="#FF6B35">
   
   <!-- Open Graph -->
   <meta property="og:title" content="Omkar Enterprises – Domestic & International Courier Service">
-  <meta property="og:description" content="Fast, reliable courier services across India and 220+ countries. Check pincode serviceability instantly.">
+  <meta property="og:description" content="Fast, reliable courier services across 19,000+ Indian pincodes and 220+ territories worldwide. Check pincode serviceability instantly.">
   <meta property="og:type" content="website">
   <meta property="og:image" content="assets/logo.png">
   
@@ -35,59 +35,154 @@
   <header class="site-header" id="site-header"></header>
 
   <!-- HERO SECTION -->
-  <section class="hero" id="hero-section">
-    <div class="hero-shape hero-shape-1"></div>
-    <div class="hero-shape hero-shape-2"></div>
-    <div class="container hero-content">
-      <h1>Your Trusted Courier Partner</h1>
-      <p>Fast & reliable delivery across India and 220+ countries. Check if we deliver to your pincode instantly.</p>
-      <div class="hero-actions">
-        <a href="domestic.html" class="btn btn-lg">
-          📦 Check Pincode
-        </a>
-        <a href="international.html" class="btn btn-lg btn-secondary">
-          🌍 International Shipping
-        </a>
+  <section class="hero hero-swift" id="hero-section">
+    <div class="container">
+      <div class="hero-swift-grid">
+        <!-- Left Hero Column -->
+        <div class="hero-text-col">
+          <div class="hero-pill-badge">
+            <span class="badge-dot"></span>
+            FAST &amp; RELIABLE DELIVERY
+          </div>
+          <h1 class="hero-title">Your Packages<br>Our Priority</h1>
+          <p class="hero-subtext">
+            We deliver your parcels safely and on time, anywhere, anytime. Simple, fast and reliable delivery service for your everyday needs.
+          </p>
+          
+          <!-- Tracking / Pincode Search Bar -->
+          <form class="hero-track-bar" id="hero-track-form">
+            <span class="track-bar-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+            </span>
+            <input 
+              type="text" 
+              id="hero-track-input" 
+              class="track-bar-input" 
+              placeholder="Track your package or enter pincode..." 
+              autocomplete="off" 
+              aria-label="Track package or check pincode"
+            />
+            <button type="submit" class="track-bar-btn" id="hero-track-btn" aria-label="Submit search">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </button>
+          </form>
+        </div>
+
+        <!-- Right Hero Column (Van & Annotation) -->
+        <div class="hero-visual-col">
+          <div class="hero-circle-backdrop"></div>
+          
+          <div class="hero-van-wrapper">
+            <!-- Handwritten playful note -->
+            <div class="handwritten-note">
+              <span>From our hands<br>to your door</span>
+              <svg class="handwritten-arrow-svg" viewBox="0 0 50 35" fill="none" aria-hidden="true">
+                <path d="M6 4 C 22 2, 42 10, 36 28" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+                <path d="M30 22 L 36 28 L 43 23" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+
+            <img 
+              src="assets/hero-van.jpg" 
+              alt="Fast delivery courier van with parcels and trolley" 
+              class="hero-van-img" 
+              width="600" 
+              height="450" 
+              loading="eager"
+            />
+          </div>
+        </div>
       </div>
 
-      <!-- Stats -->
-      <div class="hero-stats">
-        <div class="hero-stat">
-          <div class="hero-stat-value">30,000+</div>
-          <div class="hero-stat-label">Pincodes Served</div>
+      <!-- Features Strip (4 highlight badges) -->
+      <div class="hero-features-strip">
+        <div class="feature-strip-card">
+          <div class="feature-strip-icon icon-fast">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+          </div>
+          <div class="feature-strip-info">
+            <h4>Fast Delivery</h4>
+            <p>Get your package in record time</p>
+          </div>
         </div>
-        <div class="hero-stat">
-          <div class="hero-stat-value">220+</div>
-          <div class="hero-stat-label">Countries</div>
+
+        <div class="feature-strip-card">
+          <div class="feature-strip-icon icon-shield">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              <polyline points="9 12 11 14 15 10"></polyline>
+            </svg>
+          </div>
+          <div class="feature-strip-info">
+            <h4>Safe &amp; Secure</h4>
+            <p>Your items are fully protected</p>
+          </div>
         </div>
-        <div class="hero-stat">
-          <div class="hero-stat-value">24-48h</div>
-          <div class="hero-stat-label">Metro Delivery</div>
+
+        <div class="feature-strip-card">
+          <div class="feature-strip-icon icon-track">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22">
+              <line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line>
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+              <line x1="12" y1="22.08" x2="12" y2="12"></line>
+            </svg>
+          </div>
+          <div class="feature-strip-info">
+            <h4>Real-Time Tracking</h4>
+            <p>Track your package at every step</p>
+          </div>
         </div>
-        <div class="hero-stat">
-          <div class="hero-stat-value">10k+</div>
-          <div class="hero-stat-label">Happy Clients</div>
+
+        <div class="feature-strip-card">
+          <div class="feature-strip-icon icon-support">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22">
+              <path d="M3 18v-6a9 9 0 0 1 18 0v6"></path>
+              <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path>
+            </svg>
+          </div>
+          <div class="feature-strip-info">
+            <h4>24/7 Support</h4>
+            <p>We're always here to help</p>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
+
   <!-- QUICK ACTIONS (Mobile-first feature) -->
   <div class="quick-actions">
     <a href="domestic.html" class="quick-action-card" id="qa-domestic">
-      <div class="quick-action-icon icon-domestic">📦</div>
+      <div class="quick-action-icon icon-domestic">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+      </div>
       <span class="quick-action-label">Domestic Pincode</span>
     </a>
     <a href="international.html" class="quick-action-card" id="qa-international">
-      <div class="quick-action-icon icon-international">✈️</div>
+      <div class="quick-action-icon icon-international">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      </div>
       <span class="quick-action-label">International</span>
     </a>
     <a href="domestic.html#scanner" class="quick-action-card" id="qa-scan">
-      <div class="quick-action-icon icon-scan">📷</div>
+      <div class="quick-action-icon icon-scan">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+      </div>
       <span class="quick-action-label">Scan Pincode</span>
     </a>
     <a href="contact.html" class="quick-action-card" id="qa-contact">
-      <div class="quick-action-icon icon-contact">📞</div>
+      <div class="quick-action-icon icon-contact">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      </div>
       <span class="quick-action-label">Contact Us</span>
     </a>
   </div>
@@ -100,37 +195,37 @@
       
       <div class="services-grid">
         <div class="card card-hover service-card aos">
-          <div class="service-icon">🚚</div>
+          <div class="service-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></div>
           <h3>Domestic Courier</h3>
           <p>Express and standard delivery across all Indian states. Door-to-door pickup and delivery with real-time pincode serviceability checking.</p>
         </div>
 
         <div class="card card-hover service-card aos">
-          <div class="service-icon">✈️</div>
+          <div class="service-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
           <h3>International Shipping</h3>
-          <p>Ship documents and parcels to 220+ countries and territories worldwide. Safe, secure, and timely international delivery.</p>
+          <p>Ship documents and parcels to 220+ territories worldwide. Safe, secure, and timely international delivery.</p>
         </div>
 
         <div class="card card-hover service-card aos">
-          <div class="service-icon">⚡</div>
+          <div class="service-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
           <h3>Express Delivery</h3>
           <p>Same-day and next-day delivery options for urgent shipments within metro cities and major towns across India.</p>
         </div>
 
         <div class="card card-hover service-card aos">
-          <div class="service-icon">📄</div>
+          <div class="service-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
           <h3>Document Services</h3>
           <p>Secure and confidential document courier with signature confirmation. Perfect for legal, business, and personal documents.</p>
         </div>
 
         <div class="card card-hover service-card aos">
-          <div class="service-icon">🏢</div>
+          <div class="service-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><line x1="9" y1="22" x2="9" y2="22.01"/><line x1="15" y1="22" x2="15" y2="22.01"/><line x1="8" y1="6" x2="8.01" y2="6"/><line x1="16" y1="6" x2="16.01" y2="6"/><line x1="8" y1="10" x2="8.01" y2="10"/><line x1="16" y1="10" x2="16.01" y2="10"/><line x1="8" y1="14" x2="8.01" y2="14"/><line x1="16" y1="14" x2="16.01" y2="14"/></svg></div>
           <h3>Bulk & Corporate</h3>
           <p>Customized solutions for businesses with high-volume shipping needs. Dedicated account management and competitive rates.</p>
         </div>
 
         <div class="card card-hover service-card aos">
-          <div class="service-icon">📦</div>
+          <div class="service-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/></svg></div>
           <h3>Parcel Pickup</h3>
           <p>Schedule a pickup from your doorstep. No need to visit our office — we come to you with flexible timing options.</p>
         </div>
@@ -139,7 +234,7 @@
   </section>
 
   <!-- HOW IT WORKS -->
-  <section class="section" style="background:var(--bg-secondary);" id="how-it-works">
+  <section class="section" id="how-it-works">
     <div class="container">
       <h2 class="section-title aos">How It Works</h2>
       <p class="section-subtitle aos">Simple steps to ship your parcel</p>
@@ -177,32 +272,32 @@
       
       <div class="services-grid">
         <div class="card card-compact aos" style="text-align:center;">
-          <div class="service-icon" style="background:rgba(34,197,94,0.1);">🛡️</div>
+          <div class="service-icon" style="background:rgba(34,197,94,0.1);"><svg viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2" width="24" height="24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
           <h4>Safe & Secure</h4>
           <p style="font-size:var(--fs-sm);">Your parcels are handled with utmost care with proper packaging and insurance options.</p>
         </div>
         <div class="card card-compact aos" style="text-align:center;">
-          <div class="service-icon" style="background:rgba(59,130,246,0.1);">⏰</div>
+          <div class="service-icon" style="background:rgba(59,130,246,0.1);"><svg viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" width="24" height="24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
           <h4>On-Time Delivery</h4>
           <p style="font-size:var(--fs-sm);">We pride ourselves on punctual delivery. Track your shipment and receive timely updates.</p>
         </div>
         <div class="card card-compact aos" style="text-align:center;">
-          <div class="service-icon" style="background:rgba(245,158,11,0.1);">💰</div>
+          <div class="service-icon" style="background:rgba(245,158,11,0.1);"><svg viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2" width="24" height="24"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><line x1="12" y1="6" x2="12" y2="8"/><line x1="12" y1="16" x2="12" y2="18"/></svg></div>
           <h4>Affordable Rates</h4>
           <p style="font-size:var(--fs-sm);">Competitive pricing with no hidden charges. Get the best value for domestic and international shipping.</p>
         </div>
         <div class="card card-compact aos" style="text-align:center;">
-          <div class="service-icon" style="background:rgba(168,85,247,0.1);">🌐</div>
+          <div class="service-icon" style="background:rgba(168,85,247,0.1);"><svg viewBox="0 0 24 24" fill="none" stroke="#9333EA" stroke-width="2" width="24" height="24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
           <h4>Wide Coverage</h4>
-          <p style="font-size:var(--fs-sm);">30,000+ pincodes across India and 220+ countries worldwide with dependable logistics partners.</p>
+          <p style="font-size:var(--fs-sm);">19,000+ pincodes across India and 220+ territories worldwide with dependable logistics partners.</p>
         </div>
         <div class="card card-compact aos" style="text-align:center;">
-          <div class="service-icon" style="background:rgba(236,72,153,0.1);">🤝</div>
+          <div class="service-icon" style="background:rgba(236,72,153,0.1);"><svg viewBox="0 0 24 24" fill="none" stroke="#DB2777" stroke-width="2" width="24" height="24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></div>
           <h4>Personal Support</h4>
           <p style="font-size:var(--fs-sm);">Dedicated customer support via phone, WhatsApp, and email. We're always here to help.</p>
         </div>
         <div class="card card-compact aos" style="text-align:center;">
-          <div class="service-icon" style="background:rgba(20,184,166,0.1);">🏠</div>
+          <div class="service-icon" style="background:rgba(20,184,166,0.1);"><svg viewBox="0 0 24 24" fill="none" stroke="#0D9488" stroke-width="2" width="24" height="24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
           <h4>Door-to-Door</h4>
           <p style="font-size:var(--fs-sm);">We pick up from your location and deliver to the recipient's doorstep. No visits to the office needed.</p>
         </div>
@@ -211,14 +306,20 @@
   </section>
 
   <!-- TESTIMONIALS -->
-  <section class="section" style="background:var(--bg-secondary);" id="testimonials-section">
+  <section class="section" id="testimonials-section">
     <div class="container">
       <h2 class="section-title aos">What Our Customers Say</h2>
       <p class="section-subtitle aos">Trusted by thousands of businesses and individuals</p>
 
       <div class="testimonials-scroll">
         <div class="card testimonial-card aos">
-          <div class="testimonial-stars">★★★★★</div>
+          <div class="testimonial-stars" aria-label="5 stars">
+            <svg viewBox="0 0 24 24" fill="#F59E0B" width="16" height="16"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <svg viewBox="0 0 24 24" fill="#F59E0B" width="16" height="16"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <svg viewBox="0 0 24 24" fill="#F59E0B" width="16" height="16"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <svg viewBox="0 0 24 24" fill="#F59E0B" width="16" height="16"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <svg viewBox="0 0 24 24" fill="#F59E0B" width="16" height="16"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          </div>
           <p class="testimonial-text">"Excellent service! Delivered my documents to the US in just 4 days. Very professional and reliable. Will use again."</p>
           <div class="testimonial-author">
             <div class="avatar">RK</div>
@@ -230,7 +331,13 @@
         </div>
 
         <div class="card testimonial-card aos">
-          <div class="testimonial-stars">★★★★★</div>
+          <div class="testimonial-stars" aria-label="5 stars">
+            <svg viewBox="0 0 24 24" fill="#F59E0B" width="16" height="16"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <svg viewBox="0 0 24 24" fill="#F59E0B" width="16" height="16"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <svg viewBox="0 0 24 24" fill="#F59E0B" width="16" height="16"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <svg viewBox="0 0 24 24" fill="#F59E0B" width="16" height="16"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <svg viewBox="0 0 24 24" fill="#F59E0B" width="16" height="16"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          </div>
           <p class="testimonial-text">"The pincode checker feature is so convenient! I can instantly check if they deliver to my area. Highly recommend their services."</p>
           <div class="testimonial-author">
             <div class="avatar" style="background:var(--brand-secondary);">PS</div>
@@ -242,7 +349,13 @@
         </div>
 
         <div class="card testimonial-card aos">
-          <div class="testimonial-stars">★★★★★</div>
+          <div class="testimonial-stars" aria-label="5 stars">
+            <svg viewBox="0 0 24 24" fill="#F59E0B" width="16" height="16"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <svg viewBox="0 0 24 24" fill="#F59E0B" width="16" height="16"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <svg viewBox="0 0 24 24" fill="#F59E0B" width="16" height="16"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <svg viewBox="0 0 24 24" fill="#F59E0B" width="16" height="16"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <svg viewBox="0 0 24 24" fill="#F59E0B" width="16" height="16"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          </div>
           <p class="testimonial-text">"Best courier service for international shipping from India. They handle everything from customs paperwork to final delivery."</p>
           <div class="testimonial-author">
             <div class="avatar" style="background:var(--color-success);">AM</div>
@@ -254,7 +367,13 @@
         </div>
 
         <div class="card testimonial-card aos">
-          <div class="testimonial-stars">★★★★★</div>
+          <div class="testimonial-stars" aria-label="5 stars">
+            <svg viewBox="0 0 24 24" fill="#F59E0B" width="16" height="16"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <svg viewBox="0 0 24 24" fill="#F59E0B" width="16" height="16"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <svg viewBox="0 0 24 24" fill="#F59E0B" width="16" height="16"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <svg viewBox="0 0 24 24" fill="#F59E0B" width="16" height="16"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <svg viewBox="0 0 24 24" fill="#F59E0B" width="16" height="16"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          </div>
           <p class="testimonial-text">"मुझे उनकी डोर-टू-डोर सर्विस बहुत अच्छी लगी। समय पर पार्सल डिलीवर हुआ और स्टाफ बहुत सहयोगी था।"</p>
           <div class="testimonial-author">
             <div class="avatar" style="background:var(--brand-accent-dark);color:#333;">SJ</div>
@@ -266,7 +385,13 @@
         </div>
 
         <div class="card testimonial-card aos">
-          <div class="testimonial-stars">★★★★★</div>
+          <div class="testimonial-stars" aria-label="5 stars">
+            <svg viewBox="0 0 24 24" fill="#F59E0B" width="16" height="16"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <svg viewBox="0 0 24 24" fill="#F59E0B" width="16" height="16"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <svg viewBox="0 0 24 24" fill="#F59E0B" width="16" height="16"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <svg viewBox="0 0 24 24" fill="#F59E0B" width="16" height="16"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <svg viewBox="0 0 24 24" fill="#F59E0B" width="16" height="16"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          </div>
           <p class="testimonial-text">"आम्ही नियमितपणे कुरिअर सर्विस वापरतो. ओंकार एंटरप्राइजेसची सेवा अत्यंत विश्वसनीय आणि वेळेवर आहे."</p>
           <div class="testimonial-author">
             <div class="avatar" style="background:#6C3CE1;">VP</div>
@@ -363,16 +488,18 @@
   </section>
 
   <!-- CONTACT CTA -->
-  <section class="section" style="background:var(--bg-secondary);" id="contact-cta">
+  <section class="section" id="contact-cta">
     <div class="container text-center">
       <h2 class="section-title aos">Ready to Ship?</h2>
       <p class="section-subtitle aos">Get in touch with us for enquiries, quotes, or to schedule a pickup</p>
       <div class="flex justify-center gap-3 flex-wrap aos">
         <a href="contact.html" class="btn btn-primary btn-lg" id="cta-contact">
-          📞 Contact Us
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          <span>Contact Us</span>
         </a>
         <a href="#" class="btn btn-whatsapp btn-lg" id="cta-whatsapp" target="_blank">
-          💬 WhatsApp Us
+          <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          <span>WhatsApp Us</span>
         </a>
       </div>
     </div>
@@ -418,9 +545,7 @@
         }
 
         // WhatsApp buttons
-        const waLink = biz.whatsapp 
-          ? whatsappLink(biz.whatsapp, 'Hi! I would like to enquire about your courier services.')
-          : 'contact.html';
+        const waLink = whatsappLink(biz.whatsapp || '919619628045', 'Hi! I would like to enquire about your courier services.');
         
         const ctaWa = document.getElementById('cta-whatsapp');
         if (ctaWa) ctaWa.href = waLink;
@@ -435,6 +560,22 @@
     }
 
     init();
+
+    // Hero track form handling
+    const heroTrackForm = document.getElementById('hero-track-form');
+    if (heroTrackForm) {
+      heroTrackForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const input = document.getElementById('hero-track-input');
+        const val = input ? input.value.trim() : '';
+        if (!val) return;
+        if (/^\d{6}$/.test(val)) {
+          window.location.href = `domestic.html?pincode=${encodeURIComponent(val)}`;
+        } else {
+          window.location.href = `domestic.html?search=${encodeURIComponent(val)}`;
+        }
+      });
+    }
 
     // Auth listener to update UI (the auth module handles class toggling)
     onAuthChange((user, userData, isAdmin) => {
