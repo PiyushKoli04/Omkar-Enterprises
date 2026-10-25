@@ -94,6 +94,62 @@
   border-radius: 4px;
 }
 
+/* Destination City & State Banner Highlight */
+.label-dest-highlight {
+  background: #111827;
+  color: #ffffff;
+  padding: 5px 8px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.dest-tag {
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #9ca3af;
+  text-transform: uppercase;
+}
+
+.dest-val {
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  color: #ffffff;
+  text-transform: uppercase;
+}
+
+/* Secondary City & State Box */
+.label-city-state-box {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+  margin-bottom: 4px;
+}
+
+.city-pill, .state-pill {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+.pill-lbl {
+  font-size: 8px;
+  font-weight: 800;
+  color: #64748b;
+  margin-right: 3px;
+}
+
+.pill-txt {
+  font-weight: 800;
+  color: #0f172a;
+}
+
 .label-section {
   margin-bottom: 10px;
 }
@@ -394,6 +450,58 @@
     padding: 2px 5px !important;
     background: #000000 !important;
     color: #ffffff !important;
+  }
+
+  /* HIGH-VISIBILITY DESTINATION CITY & STATE IN PRINT */
+  .label-dest-highlight {
+    background: #000000 !important;
+    color: #ffffff !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    padding: 2.5mm 4mm !important;
+    margin-bottom: 3mm !important;
+    border-radius: 2px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+  }
+
+  .dest-tag {
+    color: #d1d5db !important;
+    font-size: 7pt !important;
+    font-weight: 800 !important;
+  }
+
+  .dest-val {
+    color: #ffffff !important;
+    font-size: 14pt !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.05em !important;
+  }
+
+  .label-city-state-box {
+    display: flex !important;
+    gap: 3mm !important;
+    margin: 2mm 0 !important;
+  }
+
+  .city-pill, .state-pill {
+    border: 1.5px solid #000000 !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    padding: 1mm 2.5mm !important;
+    font-size: 9.5pt !important;
+    border-radius: 2px !important;
+  }
+
+  .pill-lbl {
+    color: #4b5563 !important;
+    font-size: 7pt !important;
+  }
+
+  .pill-txt {
+    color: #000000 !important;
+    font-weight: 900 !important;
   }
 
   .address-label-sheet-item {

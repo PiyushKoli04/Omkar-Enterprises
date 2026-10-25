@@ -28,6 +28,7 @@ export async function getBusinessSettings() {
       phone: '+919619628045',
       whatsapp: '919619628045',
       email: 'vanitaharesh2005@gmail.com',
+      labelEmail: 'vanitaharesh2005@gmail.com',
       address: 'Omkar Enterprises Hub, Nerul, Navi Mumbai, Maharashtra 400706',
       workingHours: 'Mon-Sat: 9:00 AM - 8:00 PM (Sunday Closed)',
       companyName: 'Omkar Enterprises',
@@ -44,6 +45,7 @@ export async function getBusinessSettings() {
         phone: d.phone || DEFAULT_BIZ.phone,
         whatsapp: d.whatsapp || DEFAULT_BIZ.whatsapp,
         email: d.email || DEFAULT_BIZ.email,
+        labelEmail: d.labelEmail || DEFAULT_BIZ.labelEmail,
         address: d.address || DEFAULT_BIZ.address,
       };
     } else {
@@ -56,6 +58,7 @@ export async function getBusinessSettings() {
       phone: '+919619628045',
       whatsapp: '919619628045',
       email: 'vanitaharesh2005@gmail.com',
+      labelEmail: 'vanitaharesh2005@gmail.com',
       address: 'Omkar Enterprises Hub, Nerul, Navi Mumbai, Maharashtra 400706',
       workingHours: 'Mon-Sat: 9:00 AM - 8:00 PM',
       companyName: 'Omkar Enterprises',

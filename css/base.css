@@ -14,6 +14,7 @@
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--header-height) + 16px);
   -webkit-text-size-adjust: 100%;
   font-size: 16px;
 }
@@ -153,6 +154,13 @@ button {
   .container {
     padding: 0 var(--space-8);
   }
+}
+
+.container-narrow {
+  width: 100%;
+  max-width: var(--container-narrow, 840px);
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .max-w-xs {

@@ -1,14 +1,100 @@
 /**
  * Printable Address Label Generator Module
  * Omkar Enterprises – Courier Consignment Label Standard
- * Featuring AI Address Photo Scanning (Tesseract.js OCR) & Multi-Format Printing
+ * Featuring AI Photo Scanning (OCR), Direct Text Parsing, City/State Highlights & Multi-Format Printing
  */
 
 import { db, collection, addDoc, getDocs, query, orderBy, limit, deleteDoc, doc, serverTimestamp } from './db.js';
 import { getCurrentUser } from './auth.js';
 import { showToast, escapeHtml } from './ui.js';
+import { PINCODE_DATABASE } from './pincode-db.js';
 
 let tesseractLoadingPromise = null;
+
+// Official Indian States & UTs
+export const INDIAN_STATES = [
+  'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh',
+  'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jharkhand', 'Karnataka',
+  'Kerala', 'Madhya Pradesh', 'Maharashtra', 'Manipur', 'Meghalaya', 'Mizoram',
+  'Nagaland', 'Odisha', 'Punjab', 'Rajasthan', 'Sikkim', 'Tamil Nadu',
+  'Telangana', 'Tripura', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal',
+  'Delhi', 'New Delhi', 'Chandigarh', 'Jammu and Kashmir', 'Jammu & Kashmir',
+  'Ladakh', 'Puducherry', 'Andaman and Nicobar Islands',
+  'Dadra and Nagar Haveli and Daman and Diu', 'Lakshadweep'
+];
+
+export const STATE_ALIASES = {
+  'MH': 'Maharashtra',
+  'MAHARASHTRA': 'Maharashtra',
+  'DL': 'Delhi',
+  'DELHI': 'Delhi',
+  'NEW DELHI': 'Delhi',
+  'KA': 'Karnataka',
+  'KARNATAKA': 'Karnataka',
+  'TN': 'Tamil Nadu',
+  'TAMIL NADU': 'Tamil Nadu',
+  'TAMILNADU': 'Tamil Nadu',
+  'GJ': 'Gujarat',
+  'GUJARAT': 'Gujarat',
+  'UP': 'Uttar Pradesh',
+  'UTTAR PRADESH': 'Uttar Pradesh',
+  'RJ': 'Rajasthan',
+  'RAJASTHAN': 'Rajasthan',
+  'WB': 'West Bengal',
+  'WEST BENGAL': 'West Bengal',
+  'BENGAL': 'West Bengal',
+  'MP': 'Madhya Pradesh',
+  'MADHYA PRADESH': 'Madhya Pradesh',
+  'KL': 'Kerala',
+  'KERALA': 'Kerala',
+  'TS': 'Telangana',
+  'TELANGANA': 'Telangana',
+  'AP': 'Andhra Pradesh',
+  'ANDHRA PRADESH': 'Andhra Pradesh',
+  'PB': 'Punjab',
+  'PUNJAB': 'Punjab',
+  'HR': 'Haryana',
+  'HARYANA': 'Haryana',
+  'BR': 'Bihar',
+  'BIHAR': 'Bihar',
+  'ODISHA': 'Odisha',
+  'ORISSA': 'Odisha',
+  'JH': 'Jharkhand',
+  'JHARKHAND': 'Jharkhand',
+  'CHHATTISGARH': 'Chhattisgarh',
+  'CG': 'Chhattisgarh',
+  'UK': 'Uttarakhand',
+  'UTTARAKHAND': 'Uttarakhand',
+  'HP': 'Himachal Pradesh',
+  'HIMACHAL': 'Himachal Pradesh',
+  'GOA': 'Goa',
+  'GA': 'Goa',
+  'ASSAM': 'Assam',
+  'AS': 'Assam'
+};
+
+export const COMMON_CITIES = [
+  'Mumbai', 'Navi Mumbai', 'Thane', 'Kalyan', 'Dombivli', 'Mira Bhayandar', 'Vasai', 'Virar', 'Ulhasnagar', 'Bhiwandi',
+  'Pune', 'Pimpri Chinchwad', 'Nagpur', 'Nashik', 'Aurangabad', 'Solapur', 'Kolhapur', 'Amravati', 'Nanded', 'Jalgaon',
+  'Delhi', 'New Delhi', 'Noida', 'Greater Noida', 'Gurgaon', 'Gurugram', 'Faridabad', 'Ghaziabad',
+  'Bengaluru', 'Bangalore', 'Mysore', 'Mangalore', 'Hubli', 'Dharwad', 'Belgaum',
+  'Hyderabad', 'Secunderabad', 'Warangal', 'Nizamabad',
+  'Chennai', 'Madurai', 'Coimbatore', 'Salem', 'Tiruchirappalli', 'Trichy', 'Tirunelveli',
+  'Kolkata', 'Howrah', 'Siliguri', 'Durgapur', 'Asansol',
+  'Ahmedabad', 'Surat', 'Vadodara', 'Rajkot', 'Bhavnagar', 'Jamnagar', 'Gandhinagar',
+  'Jaipur', 'Jodhpur', 'Udaipur', 'Kota', 'Ajmer', 'Bikaner', 'Alwar',
+  'Lucknow', 'Kanpur', 'Agra', 'Varanasi', 'Prayagraj', 'Allahabad', 'Meerut', 'Bareilly', 'Aligarh', 'Moradabad',
+  'Bhopal', 'Indore', 'Gwalior', 'Jabalpur', 'Ujjain', 'Sagar',
+  'Patna', 'Gaya', 'Bhagalpur', 'Muzaffarpur', 'Purnia',
+  'Ranchi', 'Jamshedpur', 'Dhanbad', 'Bokaro',
+  'Bhubaneswar', 'Cuttack', 'Rourkela', 'Puri',
+  'Raipur', 'Bhilai', 'Bilaspur',
+  'Chandigarh', 'Ludhiana', 'Amritsar', 'Jalandhar', 'Patiala',
+  'Dehradun', 'Haridwar', 'Roorkee', 'Rishikesh', 'Haldwani',
+  'Kochi', 'Cochin', 'Thiruvananthapuram', 'Trivandrum', 'Kozhikode', 'Calicut', 'Kollam', 'Thrissur',
+  'Panaji', 'Margao', 'Vasco', 'Mapusa',
+  'Guwahati', 'Dispur', 'Silchar', 'Dibrugarh'
+];
 
 /**
  * Lazy-load Tesseract.js from CDN
@@ -33,22 +119,25 @@ export async function loadTesseract() {
 }
 
 /**
- * Robust parser to extract Indian address details from raw OCR text
+ * Robust parser to intelligently separate Name, Address, City, State, Pincode & Phone
+ * Works on both raw pasted customer text (WhatsApp/SMS) and OCR output!
  */
 export function parseAddressText(rawText) {
   if (!rawText || typeof rawText !== 'string') {
     return {
       toName: '',
       toAddress: '',
+      toCity: '',
+      toState: '',
       toPincode: '',
       toPhone: '',
-      missingFields: ['name', 'address', 'pincode', 'phone'],
+      missingFields: ['name', 'address', 'city', 'state', 'pincode', 'phone'],
       rawText: ''
     };
   }
 
-  const rawClean = rawText.replace(/\r\n/g, '\n');
-  const lines = rawClean
+  const rawClean = rawText.replace(/\r\n/g, '\n').trim();
+  const rawLines = rawClean
     .split('\n')
     .map(l => l.trim())
     .filter(l => l.length > 0);
@@ -56,80 +145,109 @@ export function parseAddressText(rawText) {
   let toName = '';
   let toPincode = '';
   let toPhone = '';
+  let toState = '';
+  let toCity = '';
   const addressLines = [];
 
-  // 1. Extract Pincode (6-digit Indian PIN)
-  // Check for explicit "pin/pincode" tag first
+  // 1. Extract 6-digit Indian Pincode
   const pinKeywordMatch = rawClean.match(/(?:pin\s*(?:code)?|postal|pin)[\s.:\-]*([1-9][0-9]{5})\b/i);
   if (pinKeywordMatch) {
     toPincode = pinKeywordMatch[1];
   } else {
-    // Look for spaced 3+3 (e.g., 400 001)
     const spacedMatch = rawClean.match(/\b([1-9][0-9]{2})[\s\-]+([0-9]{3})\b/);
     if (spacedMatch) {
       toPincode = spacedMatch[1] + spacedMatch[2];
     } else {
-      // General 6-digit number starting 1-9
       const pinMatches = rawClean.match(/\b[1-9][0-9]{5}\b/g);
       if (pinMatches && pinMatches.length > 0) {
-        // Prefer the last pincode found (usually at bottom of address)
         toPincode = pinMatches[pinMatches.length - 1];
       }
     }
   }
 
   // 2. Extract Phone Number
-  // Look for "mob/mobile/ph/phone/contact" keyword first
-  const phoneKeywordMatch = rawClean.match(/(?:mob(?:ile)?|phone|ph|tel|contact|call|cell)[\s.:\-]*((?:\+?91[\-\s]?)?[6-9]\d{9}|[6-9]\d{4}[\-\s]?\d{5})/i);
+  const phoneKeywordMatch = rawClean.match(/(?:mob(?:ile)?|phone|ph|tel|contact|call|cell|wa|whatsapp)[\s.:\-]*((?:\+?91[\-\s]?)?[6-9]\d{9}|[6-9]\d{4}[\-\s]?\d{5})/i);
   if (phoneKeywordMatch) {
     toPhone = phoneKeywordMatch[1].replace(/[^0-9+]/g, '');
   } else {
-    // 10 digits starting with 6,7,8,9 optionally preceded by +91, 91, or 0
     const phoneMatches = rawClean.match(/(?:(?:\+|0{0,2})91[\-\s]?)?([6-9]\d{9})\b/g);
     if (phoneMatches && phoneMatches.length > 0) {
       toPhone = phoneMatches[0].replace(/[^0-9+]/g, '');
     }
   }
 
-  // Helper to test if a line contains only phone / pincode artifacts
-  const isPurePhoneOrPin = (line) => {
+  // 3. Extract Indian State from text
+  for (const [alias, canonicalState] of Object.entries(STATE_ALIASES)) {
+    const stateRegex = new RegExp(`\\b${alias.replace('&', '[&\\s]')}\\b`, 'i');
+    if (stateRegex.test(rawClean)) {
+      toState = canonicalState;
+      break;
+    }
+  }
+
+  // 4. Extract Indian City from text
+  for (const city of COMMON_CITIES) {
+    const cityRegex = new RegExp(`\\b${city}\\b`, 'i');
+    if (cityRegex.test(rawClean)) {
+      toCity = city;
+      break;
+    }
+  }
+
+  // 5. Lookup fallback City & State from local Pincode Database
+  if (toPincode && (!toCity || !toState) && PINCODE_DATABASE && PINCODE_DATABASE[toPincode]) {
+    const dbEntry = PINCODE_DATABASE[toPincode];
+    // dbEntry: [serviceable, area, branch, state, fastTrack]
+    if (!toState && dbEntry[3]) {
+      toState = dbEntry[3].trim();
+    }
+    if (!toCity) {
+      // Clean branch name e.g. "ANDHERI WEST-R.O" -> "Andheri" or use area
+      const branchName = dbEntry[2] || dbEntry[1] || '';
+      const cleanBranch = branchName.replace(/-R\.O|-H\.O|HUB|S\.O|\(HUB\)/gi, '').trim();
+      toCity = cleanBranch.split(/\s+/)[0] || cleanBranch;
+    }
+  }
+
+  // Helper: check if a line is exclusively phone or pincode or state
+  const isExcludedLine = (line) => {
     const digitsOnly = line.replace(/[^0-9]/g, '');
     if (toPhone && digitsOnly.includes(toPhone.replace(/[^0-9]/g, '')) && line.length < 30) return true;
     if (toPincode && line.includes(toPincode) && line.length < 18) return true;
+    if (toState && line.toLowerCase() === toState.toLowerCase()) return true;
     return false;
   };
 
-  // 3. Extract Name & Address Lines
-  for (let i = 0; i < lines.length; i++) {
-    let line = lines[i];
+  // 6. Extract Consignee Name & Street Address Lines
+  for (let i = 0; i < rawLines.length; i++) {
+    let line = rawLines[i];
 
-    if (isPurePhoneOrPin(line)) {
+    if (isExcludedLine(line)) {
       continue;
     }
 
     // Check for explicit "To:" or "Name:" prefix
-    const namePrefixMatch = line.match(/^(?:to\s*[:\-]?|consignee\s*[:\-]?|recipient\s*[:\-]?|name\s*[:\-]?|deliver\s+to\s*[:\-]?)\s*(.*)/i);
+    const namePrefixMatch = line.match(/^(?:to\s*[:\-]?|consignee\s*[:\-]?|recipient\s*[:\-]?|name\s*[:\-]?|deliver\s+to\s*[:\-]?|attn\s*[:\-]?)\s*(.*)/i);
     if (namePrefixMatch && !toName) {
       const candidate = namePrefixMatch[1].trim();
       if (candidate.length > 1) {
         toName = candidate;
         continue;
       }
-      // "To:" on its own line: next line is likely the name
-      if (candidate.length === 0 && i + 1 < lines.length) {
-        toName = lines[i + 1].trim();
+      if (candidate.length === 0 && i + 1 < rawLines.length) {
+        toName = rawLines[i + 1].trim();
         i++;
         continue;
       }
     }
 
-    // Check for honorifics (Mr., Mrs., Ms., Dr., Shri, Smt.)
+    // Check for personal titles
     if (!toName && /^(?:mr\.|mrs\.|ms\.|dr\.|shri|smt\.)\s+[a-z\s]+$/i.test(line)) {
       toName = line;
       continue;
     }
 
-    // If still no name, check if line 0 looks like a person's name
+    // First line name heuristic
     if (!toName && i === 0) {
       const isAddressKeyword = /\b(?:flat|room|shop|plot|gala|bldg|building|floor|house|road|rd|street|st|lane|nagar|colony|sector|opp|near|behind|beside)\b/i.test(line);
       if (!isAddressKeyword && line.length <= 40 && !/\d{3,}/.test(line)) {
@@ -138,7 +256,7 @@ export function parseAddressText(rawText) {
       }
     }
 
-    // Clean address line of trailing phone / pincode noise
+    // Clean address line of embedded phone/pincode
     let cleaned = line;
     if (toPhone) {
       cleaned = cleaned.replace(new RegExp('(?:mob(?:ile)?|phone|ph|contact)?\\s*[:\\-]?\\s*' + toPhone.replace('+', '\\+'), 'ig'), '').trim();
@@ -153,19 +271,22 @@ export function parseAddressText(rawText) {
     }
   }
 
-  // Format clean address text
   const toAddress = addressLines.join(',\n');
 
-  // Determine missing fields
+  // Check missing required fields
   const missingFields = [];
   if (!toName.trim()) missingFields.push('name');
   if (!toAddress.trim()) missingFields.push('address');
+  if (!toCity.trim()) missingFields.push('city');
+  if (!toState.trim()) missingFields.push('state');
   if (!toPincode.trim()) missingFields.push('pincode');
   if (!toPhone.trim()) missingFields.push('phone');
 
   return {
     toName: toName.trim(),
     toAddress: toAddress.trim(),
+    toCity: toCity.trim(),
+    toState: toState.trim(),
     toPincode: toPincode.trim(),
     toPhone: toPhone.trim(),
     missingFields,
@@ -199,9 +320,9 @@ export async function scanAddressFromPhoto(imageSource, onProgress = () => {}) {
     const rawText = res.data.text || '';
     await worker.terminate();
 
-    onProgress({ status: 'parsing', progress: 0.95, message: 'Extracting address fields...' });
+    onProgress({ status: 'parsing', progress: 0.95, message: 'Extracting and separating fields...' });
     const parsed = parseAddressText(rawText);
-    onProgress({ status: 'done', progress: 1.0, message: 'Address parsed successfully!' });
+    onProgress({ status: 'done', progress: 1.0, message: 'Address separated successfully!' });
 
     return parsed;
   } catch (err) {
@@ -211,12 +332,14 @@ export async function scanAddressFromPhoto(imageSource, onProgress = () => {}) {
 }
 
 /**
- * Generate formatted single label HTML snippet with compact logo
+ * Generate formatted single label HTML snippet with prominent City/State highlight
  */
 function renderSingleLabelHtml(data) {
   const {
     toName = '',
     toAddress = '',
+    toCity = '',
+    toState = '',
     toPhone = '',
     toPincode = '',
     fromName = 'Omkar Enterprises',
@@ -226,6 +349,8 @@ function renderSingleLabelHtml(data) {
   } = data;
 
   const borderClass = showBorder ? 'label-bordered' : '';
+  const displayCity = (toCity || 'DESTINATION').toUpperCase();
+  const displayState = (toState || 'DOMESTIC').toUpperCase();
 
   return `
     <div class="address-label-sheet-item ${borderClass}">
@@ -236,13 +361,33 @@ function renderSingleLabelHtml(data) {
         </div>
       ` : ''}
 
+      <!-- PROMINENT DESTINATION CITY & STATE HIGHLIGHT BANNER -->
+      <div class="label-dest-highlight">
+        <span class="dest-tag">DESTINATION</span>
+        <span class="dest-val">${escapeHtml(displayCity)}, ${escapeHtml(displayState)}</span>
+      </div>
+
       <div class="label-section label-to-section">
         <div class="label-tag">DELIVER TO (CONSIGNEE)</div>
         <div class="label-consignee-name">${escapeHtml(toName || 'Consignee Name')}</div>
         <div class="label-address-body">${escapeHtml(toAddress || 'Destination Address').replace(/\n/g, '<br>')}</div>
+        
+        <!-- City & State Detail Row -->
+        <div class="label-city-state-box">
+          <div class="city-pill">
+            <span class="pill-lbl">CITY:</span>
+            <strong class="pill-txt">${escapeHtml(displayCity)}</strong>
+          </div>
+          <div class="state-pill">
+            <span class="pill-lbl">STATE:</span>
+            <strong class="pill-txt">${escapeHtml(displayState)}</strong>
+          </div>
+        </div>
+
         <div class="label-contact-line">
           <strong>Contact:</strong> ${escapeHtml(toPhone || 'N/A')}
         </div>
+        
         ${toPincode ? `
           <div class="label-pincode-highlight">
             PINCODE: <span>${escapeHtml(toPincode)}</span>
@@ -252,7 +397,7 @@ function renderSingleLabelHtml(data) {
 
       <div class="label-barcode-strip">
         <div class="barcode-lines"></div>
-        <div class="barcode-subtext">OMKAR EXPRESS • PIN: ${escapeHtml(toPincode || '400001')}</div>
+        <div class="barcode-subtext">OMKAR EXPRESS • ${escapeHtml(displayCity)} • PIN: ${escapeHtml(toPincode || '400001')}</div>
       </div>
 
       <div class="label-divider"></div>
@@ -325,6 +470,8 @@ export async function saveLabelToFirestore(data) {
   const labelRecord = {
     toName: data.toName.trim(),
     toAddress: data.toAddress.trim(),
+    toCity: data.toCity ? data.toCity.trim() : '',
+    toState: data.toState ? data.toState.trim() : '',
     toPhone: data.toPhone.trim(),
     toPincode: data.toPincode?.trim() || '',
     fromName: data.fromName.trim(),
@@ -358,3 +505,87 @@ export async function getRecentLabels(max = 25) {
 export async function deleteSavedLabel(labelId) {
   await deleteDoc(doc(db, 'labels', labelId));
 }
+
+/**
+ * Download label rendered as high-resolution PDF using html2pdf.js
+ */
+export async function downloadLabelAsPdf(data, customFilename = '') {
+  if (typeof window.html2pdf === 'undefined') {
+    throw new Error('PDF library is loading. Please try again in a moment.');
+  }
+
+  const container = document.createElement('div');
+  container.className = 'only-print-preview';
+  container.style.position = 'fixed';
+  container.style.left = '-9999px';
+  container.style.top = '0';
+  container.style.width = data.paperSize === '3x2' ? '76mm' : (data.paperSize === 'a5' ? '148mm' : (data.paperSize?.startsWith('a4') ? '210mm' : '102mm'));
+  container.style.background = '#ffffff';
+  container.innerHTML = formatAddressLabel(data);
+  document.body.appendChild(container);
+
+  const cleanName = (data.toName || 'Consignee').replace(/[^a-zA-Z0-9_-]/g, '_');
+  const city = (data.toCity || 'Dest').replace(/[^a-zA-Z0-9_-]/g, '_');
+  const filename = customFilename || `Shipping_Label_${cleanName}_${city}.pdf`;
+
+  let jsPdfFormat = 'a4';
+  if (data.paperSize === '4x6') jsPdfFormat = [102, 152];
+  else if (data.paperSize === '3x2') jsPdfFormat = [76, 51];
+  else if (data.paperSize === 'a5') jsPdfFormat = 'a5';
+
+  const opt = {
+    margin: [2, 2, 2, 2],
+    filename: filename,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true, letterRendering: true, backgroundColor: '#ffffff' },
+    jsPDF: { unit: 'mm', format: jsPdfFormat, orientation: 'portrait' }
+  };
+
+  try {
+    const targetEl = container.firstElementChild || container;
+    await window.html2pdf().set(opt).from(targetEl).save();
+    return filename;
+  } finally {
+    document.body.removeChild(container);
+  }
+}
+
+/**
+ * Generate PDF Blob from label for file sharing / attachments
+ */
+export async function generateLabelPdfBlob(data) {
+  if (typeof window.html2pdf === 'undefined') {
+    throw new Error('PDF library is loading. Please try again.');
+  }
+
+  const container = document.createElement('div');
+  container.style.position = 'fixed';
+  container.style.left = '-9999px';
+  container.style.top = '0';
+  container.style.width = data.paperSize === '3x2' ? '76mm' : (data.paperSize === 'a5' ? '148mm' : (data.paperSize?.startsWith('a4') ? '210mm' : '102mm'));
+  container.style.background = '#ffffff';
+  container.innerHTML = formatAddressLabel(data);
+  document.body.appendChild(container);
+
+  let jsPdfFormat = 'a4';
+  if (data.paperSize === '4x6') jsPdfFormat = [102, 152];
+  else if (data.paperSize === '3x2') jsPdfFormat = [76, 51];
+  else if (data.paperSize === 'a5') jsPdfFormat = 'a5';
+
+  const opt = {
+    margin: [2, 2, 2, 2],
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true, letterRendering: true, backgroundColor: '#ffffff' },
+    jsPDF: { unit: 'mm', format: jsPdfFormat, orientation: 'portrait' }
+  };
+
+  try {
+    const targetEl = container.firstElementChild || container;
+    const worker = window.html2pdf().set(opt).from(targetEl);
+    const pdfBlob = await worker.outputPdf('blob');
+    return pdfBlob;
+  } finally {
+    document.body.removeChild(container);
+  }
+}
+

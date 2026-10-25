@@ -263,24 +263,25 @@
 }
 
 /* ==========================================
-   QUICK ACTIONS (Home mobile feature)
+   QUICK ACTIONS (Action shortcuts)
    ========================================== */
 .quick-actions {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: var(--space-3);
-  margin: calc(-1 * var(--space-7)) var(--space-4) var(--space-8);
+  margin: var(--space-6) auto var(--space-8);
   position: relative;
   z-index: 2;
+  width: 100%;
 }
 
 @media (min-width: 769px) {
   .quick-actions {
     grid-template-columns: repeat(4, 1fr);
-    max-width: 900px;
-    margin: calc(-1 * var(--space-9)) auto var(--space-10);
-    padding: 0 var(--space-4);
-    gap: var(--space-3);
+    margin: var(--space-6) auto var(--space-10);
+    padding: 0;
+    gap: var(--space-4);
+    width: 100%;
   }
 }
 

@@ -199,12 +199,14 @@
       const container = document.getElementById('result-container');
       const checkBtn = document.getElementById('check-btn');
 
-      // Auto-trigger if URL has ?pin=XXXXXX
+      // Auto-trigger if URL has ?pin=XXXXXX, ?pincode=XXXXXX, or ?search=XXXXXX
       const urlParams = new URLSearchParams(window.location.search);
-      const queryPin = urlParams.get('pin');
-      if (queryPin) {
-        input.value = queryPin;
-        doCheck(queryPin);
+      const rawParam = urlParams.get('pin') || urlParams.get('pincode') || urlParams.get('search') || urlParams.get('q');
+      if (rawParam) {
+        const digits = rawParam.replace(/\D/g, '');
+        const targetPin = digits.length === 6 ? digits : rawParam.trim();
+        input.value = targetPin;
+        doCheck(targetPin);
       }
 
       // Check handler

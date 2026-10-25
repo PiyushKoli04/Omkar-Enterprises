@@ -565,6 +565,77 @@ textarea:focus {
   transition: all var(--transition-fast);
 }
 
+/* Admin Desktop Tabs vs Mobile Bottom Nav */
+@media (min-width: 769px) {
+  .admin-desktop-tabs {
+    display: block !important;
+  }
+  .admin-bottom-nav {
+    display: none !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-desktop-tabs {
+    display: none !important;
+  }
+
+  .admin-bottom-nav {
+    display: flex !important;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: var(--z-sticky);
+    background: var(--bg-glass);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid var(--border-color);
+    align-items: center !important;
+    justify-content: space-around !important;
+    padding: 0 10px !important;
+    height: 60px !important;
+    box-shadow: 0 -4px 20px rgba(15, 23, 42, 0.06);
+  }
+
+  .admin-bottom-nav .bottom-nav-item {
+    width: 44px !important;
+    height: 44px !important;
+    min-height: 44px !important;
+    max-width: 48px !important;
+    padding: 0 !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    cursor: pointer !important;
+    color: var(--text-secondary) !important;
+    transition: all var(--transition-fast) !important;
+  }
+
+  .admin-bottom-nav .bottom-nav-item svg {
+    width: 22px !important;
+    height: 22px !important;
+    stroke-width: 2 !important;
+    display: block !important;
+  }
+
+  .admin-bottom-nav .bottom-nav-item:hover {
+    color: var(--brand-primary) !important;
+    background: rgba(var(--brand-primary-rgb), 0.08) !important;
+  }
+
+  .admin-bottom-nav .bottom-nav-item.active {
+    color: var(--brand-primary) !important;
+    background: rgba(var(--brand-primary-rgb), 0.12) !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+}
+
 .bottom-nav-item svg {
   width: 20px;
   height: 20px;
@@ -1107,5 +1178,135 @@ textarea:focus {
   border-radius: var(--radius-lg);
   border: 1px dashed rgba(239, 68, 68, 0.25);
 }
+
+/* ==========================================
+   ACCORDION (FAQ & Collapsible Sections)
+   ========================================== */
+.accordion-card {
+  border-radius: var(--radius-2xl);
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.accordion-item {
+  border-bottom: 1px solid var(--border-color-light);
+  transition: background var(--transition-fast);
+}
+
+.accordion-item:last-child {
+  border-bottom: none;
+}
+
+.accordion-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: 20px 24px;
+  background: transparent;
+  border: none;
+  text-align: left;
+  font-family: var(--font-family);
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+  user-select: none;
+}
+
+.accordion-trigger:hover {
+  background: rgba(var(--brand-primary-rgb), 0.03);
+  color: var(--brand-primary);
+}
+
+.accordion-item.open > .accordion-trigger {
+  color: var(--brand-primary);
+  background: rgba(var(--brand-primary-rgb), 0.04);
+}
+
+.accordion-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--bg-tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), background 0.2s ease, color 0.2s ease;
+}
+
+.accordion-trigger:hover .accordion-icon {
+  background: rgba(var(--brand-primary-rgb), 0.12);
+  color: var(--brand-primary);
+}
+
+.accordion-item.open .accordion-icon {
+  transform: rotate(180deg);
+  background: var(--brand-primary);
+  color: #FFFFFF;
+}
+
+.accordion-content {
+  display: none;
+}
+
+.accordion-item.open .accordion-content {
+  display: block;
+  animation: accordionFadeSlide 0.22s ease-out;
+}
+
+@keyframes accordionFadeSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.accordion-body {
+  padding: 4px 24px 22px 24px;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+.accordion-body a {
+  color: var(--brand-primary);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color var(--transition-fast);
+}
+
+.accordion-body a:hover {
+  color: var(--brand-primary-dark);
+}
+
+@media (max-width: 640px) {
+  .accordion-trigger {
+    padding: 16px 18px;
+    font-size: 0.95rem;
+  }
+  
+  .accordion-body {
+    padding: 2px 18px 18px 18px;
+    font-size: 0.9rem;
+  }
+  
+  .accordion-icon {
+    width: 28px;
+    height: 28px;
+  }
+}
+
 
 
