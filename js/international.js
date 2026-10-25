@@ -159,8 +159,8 @@ export async function renderCountriesList(container, countries, filterText = '',
 
   const filtered = countries.filter(c => {
     const matchesRegion = selectedRegion === 'All' || c.region === selectedRegion;
-    const matchesText = !normalizedFilter || 
-      c.name.toLowerCase().includes(normalizedFilter) || 
+    const matchesText = !normalizedFilter ||
+      c.name.toLowerCase().includes(normalizedFilter) ||
       c.code.toLowerCase().includes(normalizedFilter);
     return matchesRegion && matchesText;
   });
@@ -184,29 +184,30 @@ export async function renderCountriesList(container, countries, filterText = '',
   }
 
   container.innerHTML = filtered.map(country => {
-    const flag = getFlagEmoji(country.code) || `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`;
+    const code = (country.code || 'IN').toLowerCase();
+    const flag = `<img src="https://flagcdn.com/w40/${code}.png" srcset="https://flagcdn.com/w80/${code}.png 2x" width="28" height="19" alt="${escapeHtml(country.name)} Flag" class="country-flag-img" loading="lazy" onerror="this.onerror=null; this.parentElement.innerHTML='<span class=\\'flag-fallback\\'>${country.code}</span>';">`;
     const waText = `Hello Omkar Enterprises, I want to book an international courier to ${country.name}. Please guide me on rates and documentation.`;
     const waUrl = getWhatsAppUrl(whatsapp, waText);
 
     return `
-      <div class="card country-card p-4 hover-lift">
-        <div class="flex items-start gap-3 w-full">
-          <span class="country-flag" aria-hidden="true">${flag}</span>
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center justify-between gap-2">
-              <h4 class="font-bold text-sm truncate">${escapeHtml(country.name)}</h4>
-              <span class="badge badge-sm badge-outline">${country.code}</span>
-            </div>
-            <p class="text-xs text-secondary mt-1">${escapeHtml(country.notes || 'Worldwide Express Available')}</p>
-            <div class="flex gap-2 mt-3">
-              <a href="${waUrl}" target="_blank" rel="noopener" class="btn btn-whatsapp btn-sm flex-1">
-                ${ICONS.whatsapp} <span>Inquire</span>
-              </a>
-              <a href="tel:${phone}" class="btn btn-ghost btn-sm" aria-label="Call regarding ${country.name}">
-                ${ICONS.phone}
-              </a>
-            </div>
+      <div class="card country-card">
+        <div class="country-card-header">
+          <div class="country-flag-box">
+            ${flag}
           </div>
+          <div class="country-meta">
+            <h4 class="country-title">${escapeHtml(country.name)}</h4>
+          </div>
+          <span class="country-badge">${country.code}</span>
+        </div>
+        <p class="country-notes">${escapeHtml(country.notes || 'Worldwide Express Door-to-Door Delivery')}</p>
+        <div class="country-actions">
+          <a href="${waUrl}" target="_blank" rel="noopener" class="btn btn-whatsapp country-inquire-btn" aria-label="Inquire via WhatsApp about ${escapeHtml(country.name)}">
+            ${ICONS.whatsapp} <span>Inquire</span>
+          </a>
+          <a href="tel:${phone}" class="country-call-btn" title="Call for ${escapeHtml(country.name)}" aria-label="Call for ${escapeHtml(country.name)}">
+            ${ICONS.phone}
+          </a>
         </div>
       </div>
     `;

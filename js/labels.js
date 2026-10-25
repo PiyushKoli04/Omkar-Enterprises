@@ -514,15 +514,39 @@ export async function downloadLabelAsPdf(data, customFilename = '') {
     throw new Error('PDF library is loading. Please try again in a moment.');
   }
 
-  const container = document.createElement('div');
-  container.className = 'only-print-preview';
-  container.style.position = 'fixed';
-  container.style.left = '-9999px';
-  container.style.top = '0';
-  container.style.width = data.paperSize === '3x2' ? '76mm' : (data.paperSize === 'a5' ? '148mm' : (data.paperSize?.startsWith('a4') ? '210mm' : '102mm'));
-  container.style.background = '#ffffff';
-  container.innerHTML = formatAddressLabel(data);
-  document.body.appendChild(container);
+  // Check if live preview element is already present in DOM
+  const existingEl = document.getElementById('printable-label');
+  let targetEl;
+  let tempContainer = null;
+
+  if (existingEl && existingEl.offsetHeight > 0) {
+    targetEl = existingEl;
+  } else {
+    // Create temporary off-screen render mount at coordinate (0,0) behind the page
+    tempContainer = document.createElement('div');
+    tempContainer.id = 'pdf-render-temp-mount';
+    tempContainer.style.position = 'fixed';
+    tempContainer.style.top = '0px';
+    tempContainer.style.left = '0px';
+    tempContainer.style.zIndex = '-99999';
+    tempContainer.style.opacity = '1';
+    tempContainer.style.pointerEvents = 'none';
+    tempContainer.style.background = '#ffffff';
+    
+    const widthPx = data.paperSize === '3x2' ? '320px' : (data.paperSize === 'a5' ? '540px' : (data.paperSize?.startsWith('a4') ? '794px' : '400px'));
+    tempContainer.style.width = widthPx;
+    tempContainer.innerHTML = formatAddressLabel(data);
+    document.body.appendChild(tempContainer);
+
+    // Wait for logo/barcode images to fully load
+    const imgs = Array.from(tempContainer.querySelectorAll('img'));
+    await Promise.all(imgs.map(img => {
+      if (img.complete) return Promise.resolve();
+      return new Promise(res => { img.onload = res; img.onerror = res; });
+    }));
+
+    targetEl = tempContainer.querySelector('.address-label-sheet') || tempContainer.firstElementChild || tempContainer;
+  }
 
   const cleanName = (data.toName || 'Consignee').replace(/[^a-zA-Z0-9_-]/g, '_');
   const city = (data.toCity || 'Dest').replace(/[^a-zA-Z0-9_-]/g, '_');
@@ -537,35 +561,66 @@ export async function downloadLabelAsPdf(data, customFilename = '') {
     margin: [2, 2, 2, 2],
     filename: filename,
     image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true, letterRendering: true, backgroundColor: '#ffffff' },
+    html2canvas: {
+      scale: 2,
+      useCORS: true,
+      allowTaint: true,
+      scrollX: 0,
+      scrollY: 0,
+      backgroundColor: '#ffffff',
+      logging: false
+    },
     jsPDF: { unit: 'mm', format: jsPdfFormat, orientation: 'portrait' }
   };
 
   try {
-    const targetEl = container.firstElementChild || container;
     await window.html2pdf().set(opt).from(targetEl).save();
     return filename;
   } finally {
-    document.body.removeChild(container);
+    if (tempContainer && tempContainer.parentNode) {
+      document.body.removeChild(tempContainer);
+    }
   }
 }
 
 /**
- * Generate PDF Blob from label for file sharing / attachments
+ * Generate PDF Blob from label for file sharing / email attachments
  */
 export async function generateLabelPdfBlob(data) {
   if (typeof window.html2pdf === 'undefined') {
     throw new Error('PDF library is loading. Please try again.');
   }
 
-  const container = document.createElement('div');
-  container.style.position = 'fixed';
-  container.style.left = '-9999px';
-  container.style.top = '0';
-  container.style.width = data.paperSize === '3x2' ? '76mm' : (data.paperSize === 'a5' ? '148mm' : (data.paperSize?.startsWith('a4') ? '210mm' : '102mm'));
-  container.style.background = '#ffffff';
-  container.innerHTML = formatAddressLabel(data);
-  document.body.appendChild(container);
+  const existingEl = document.getElementById('printable-label');
+  let targetEl;
+  let tempContainer = null;
+
+  if (existingEl && existingEl.offsetHeight > 0) {
+    targetEl = existingEl;
+  } else {
+    tempContainer = document.createElement('div');
+    tempContainer.id = 'pdf-blob-temp-mount';
+    tempContainer.style.position = 'fixed';
+    tempContainer.style.top = '0px';
+    tempContainer.style.left = '0px';
+    tempContainer.style.zIndex = '-99999';
+    tempContainer.style.opacity = '1';
+    tempContainer.style.pointerEvents = 'none';
+    tempContainer.style.background = '#ffffff';
+
+    const widthPx = data.paperSize === '3x2' ? '320px' : (data.paperSize === 'a5' ? '540px' : (data.paperSize?.startsWith('a4') ? '794px' : '400px'));
+    tempContainer.style.width = widthPx;
+    tempContainer.innerHTML = formatAddressLabel(data);
+    document.body.appendChild(tempContainer);
+
+    const imgs = Array.from(tempContainer.querySelectorAll('img'));
+    await Promise.all(imgs.map(img => {
+      if (img.complete) return Promise.resolve();
+      return new Promise(res => { img.onload = res; img.onerror = res; });
+    }));
+
+    targetEl = tempContainer.querySelector('.address-label-sheet') || tempContainer.firstElementChild || tempContainer;
+  }
 
   let jsPdfFormat = 'a4';
   if (data.paperSize === '4x6') jsPdfFormat = [102, 152];
@@ -575,17 +630,26 @@ export async function generateLabelPdfBlob(data) {
   const opt = {
     margin: [2, 2, 2, 2],
     image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true, letterRendering: true, backgroundColor: '#ffffff' },
+    html2canvas: {
+      scale: 2,
+      useCORS: true,
+      allowTaint: true,
+      scrollX: 0,
+      scrollY: 0,
+      backgroundColor: '#ffffff',
+      logging: false
+    },
     jsPDF: { unit: 'mm', format: jsPdfFormat, orientation: 'portrait' }
   };
 
   try {
-    const targetEl = container.firstElementChild || container;
     const worker = window.html2pdf().set(opt).from(targetEl);
     const pdfBlob = await worker.outputPdf('blob');
     return pdfBlob;
   } finally {
-    document.body.removeChild(container);
+    if (tempContainer && tempContainer.parentNode) {
+      document.body.removeChild(tempContainer);
+    }
   }
 }
 

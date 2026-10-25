@@ -863,3 +863,28 @@ body.logged-in .guest-only {
 body.is-admin .admin-only {
   display: flex !important;
 }
+
+.visible {
+  display: block !important;
+}
+
+/* Auth State Display Helpers */
+.auth-only {
+  display: none !important;
+}
+
+body.logged-in .auth-only {
+  display: flex !important;
+}
+
+body.logged-in .guest-only {
+  display: none !important;
+}
+
+.admin-only {
+  display: none !important;
+}
+
+body.is-admin .admin-only {
+  display: flex !important;
+}
