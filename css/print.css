@@ -1,5 +1,5 @@
 /* ============================================
-   OMKAR ENTERPRISES – Print Styles
+   OMKAR ENTERPRISES – Print & Label Styles
    ============================================ */
 
 /* Hide print mount on screen */
@@ -7,59 +7,104 @@
   display: none !important;
 }
 
-/* Address Label Preview Styles on Screen */
+/* ============================================
+   Address Label Base Preview Styles (Screen)
+   ============================================ */
 .address-label-sheet {
   background: #ffffff;
-  padding: 20px;
-  font-family: var(--font-family);
+  padding: 18px;
+  font-family: var(--font-family, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
   color: #111827;
-  max-width: 440px;
   margin: 0 auto;
+  box-sizing: border-box;
+  transition: all 0.2s ease-in-out;
 }
 
-.address-label-sheet.label-bordered {
+/* Multi-format sheet sizing on screen preview */
+.address-label-sheet.label-size-4x6 {
+  max-width: 400px;
+}
+
+.address-label-sheet.label-size-a4-single {
+  max-width: 520px;
+  padding: 24px;
+}
+
+.address-label-sheet.label-size-a4-2 {
+  max-width: 480px;
+  padding: 16px;
+}
+
+.address-label-sheet.label-size-a4-4 {
+  max-width: 540px;
+  padding: 12px;
+}
+
+.address-label-sheet.label-size-a5 {
+  max-width: 420px;
+  padding: 18px;
+}
+
+.address-label-sheet.label-size-3x2 {
+  max-width: 320px;
+  padding: 12px;
+}
+
+/* Single Item Card */
+.address-label-sheet-item {
+  background: #ffffff;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.address-label-sheet-item.label-bordered,
+.address-label-sheet.label-bordered .address-label-sheet-item {
   border: 2px solid #111827;
-  border-radius: 8px;
+  border-radius: 6px;
 }
 
+/* Compact Brand Header */
 .label-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   border-bottom: 2px solid #111827;
-  padding-bottom: 10px;
-  margin-bottom: 14px;
+  padding-bottom: 6px;
+  margin-bottom: 10px;
   gap: 12px;
 }
 
+/* Decreased compact logo size to prioritize address readability */
 .label-logo {
-  max-height: 42px;
-  max-width: 160px;
+  max-height: 26px;
+  max-width: 120px;
   width: auto;
   height: auto;
   object-fit: contain;
+  display: inline-block;
 }
 
 .label-badge {
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 800;
   letter-spacing: 0.08em;
   background: #111827;
   color: #ffffff;
-  padding: 3px 8px;
+  padding: 2px 7px;
   border-radius: 4px;
 }
 
 .label-section {
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 .label-tag {
-  font-size: 11px;
-  font-weight: 700;
+  font-size: 10px;
+  font-weight: 800;
   text-transform: uppercase;
-  color: #6b7280;
+  color: #4b5563;
   margin-bottom: 2px;
+  letter-spacing: 0.04em;
 }
 
 .label-consignee-name,
@@ -68,49 +113,223 @@
   font-weight: 800;
   color: #111827;
   margin-bottom: 3px;
+  line-height: 1.25;
 }
 
 .label-address-body,
 .label-consigner-address {
-  font-size: 13px;
+  font-size: 12.5px;
   line-height: 1.45;
   color: #374151;
+  word-break: break-word;
 }
 
 .label-contact-line {
   font-size: 12px;
-  margin-top: 4px;
-  color: #1f2937;
+  margin-top: 5px;
+  color: #111827;
+}
+
+.label-contact-line strong {
+  color: #000000;
 }
 
 .label-pincode-highlight {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 800;
   letter-spacing: 0.05em;
   margin-top: 6px;
   color: #111827;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .label-pincode-highlight span {
   font-size: 16px;
+  font-weight: 900;
   background: #fef3c7;
-  padding: 2px 6px;
+  color: #92400e;
+  padding: 1px 8px;
   border-radius: 4px;
   border: 1px solid #fde68a;
+  letter-spacing: 0.12em;
+}
+
+/* Shipping Barcode Simulation */
+.label-barcode-strip {
+  margin: 10px 0;
+  text-align: center;
+}
+
+.barcode-lines {
+  height: 24px;
+  background: repeating-linear-gradient(
+    90deg,
+    #111827 0px,
+    #111827 2px,
+    transparent 2px,
+    transparent 4px,
+    #111827 4px,
+    #111827 6px,
+    transparent 6px,
+    transparent 9px,
+    #111827 9px,
+    #111827 11px,
+    transparent 11px,
+    transparent 13px,
+    #111827 13px,
+    #111827 15px,
+    transparent 15px,
+    transparent 17px
+  );
+  width: 88%;
+  margin: 0 auto 3px auto;
+  border-radius: 1px;
+}
+
+.barcode-subtext {
+  font-size: 9px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #4b5563;
 }
 
 .label-divider {
   border-top: 1.5px dashed #9ca3af;
-  margin: 12px 0;
+  margin: 10px 0;
 }
 
+/* Multi-item layouts (2-Up and 4-Up) */
+.label-grid-2up {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cut-guide-line {
+  text-align: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: #9ca3af;
+  border-top: 1.5px dashed #d1d5db;
+  padding-top: 4px;
+  letter-spacing: 0.05em;
+}
+
+.label-grid-4up {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* 3x2 Compact Adjustments */
+.label-size-3x2 .label-header {
+  padding-bottom: 3px;
+  margin-bottom: 6px;
+}
+
+.label-size-3x2 .label-logo {
+  max-height: 16px;
+}
+
+.label-size-3x2 .label-badge {
+  font-size: 7.5px;
+  padding: 1px 4px;
+}
+
+.label-size-3x2 .label-consignee-name {
+  font-size: 13px;
+}
+
+.label-size-3x2 .label-address-body {
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.label-size-3x2 .barcode-lines {
+  height: 16px;
+}
+
+/* ============================================
+   Multiple Print Size Selection Cards UI
+   ============================================ */
+.print-sizes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 10px;
+}
+
+.print-size-card {
+  border: 1.5px solid var(--color-border, #e5e7eb);
+  border-radius: 8px;
+  padding: 10px;
+  cursor: pointer;
+  background: var(--color-surface, #ffffff);
+  transition: all 0.15s ease-in-out;
+  text-align: left;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.print-size-card:hover {
+  border-color: var(--color-primary, #1e3a8a);
+  background: var(--color-surface-alt, #f8fafc);
+}
+
+.print-size-card.active {
+  border-color: var(--color-primary, #1e3a8a);
+  background: rgba(30, 58, 138, 0.05);
+  box-shadow: 0 0 0 2px rgba(30, 58, 138, 0.2);
+}
+
+.print-size-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.print-size-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-text, #111827);
+}
+
+.print-size-tag {
+  font-size: 9px;
+  font-weight: 700;
+  background: #e2e8f0;
+  color: #334155;
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
+.print-size-card.active .print-size-tag {
+  background: var(--color-primary, #1e3a8a);
+  color: #ffffff;
+}
+
+.print-size-desc {
+  font-size: 10px;
+  color: var(--color-text-secondary, #64748b);
+  line-height: 1.3;
+}
+
+/* ============================================
+   PRINT MEDIA QUERIES (Physical Print Output)
+   ============================================ */
 @media print {
   .only-print {
     display: block !important;
   }
 
-  /* Hide everything non-essential */
+  /* Hide screen-only interactive elements */
   .site-header,
+  .header,
   .bottom-nav,
   .site-footer,
   .fab,
@@ -118,144 +337,222 @@
   .modal-backdrop,
   .no-print,
   .theme-toggle,
-  .btn:not(.print-include) {
+  .btn,
+  #admin-logout-btn,
+  .segmented-tabs,
+  .adm-tab-content,
+  header,
+  nav {
     display: none !important;
   }
 
   body {
     padding: 0 !important;
-    background: white !important;
-    color: black !important;
-    font-size: 12pt;
+    margin: 0 !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
-  /* Remove shadows and backgrounds for print */
-  .card {
-    box-shadow: none !important;
-    border: 1px solid #ccc;
-    break-inside: avoid;
-  }
-
-  a {
-    color: black !important;
-    text-decoration: none;
-  }
-
-  /* ==========================================
-     ADDRESS LABEL – Print Layout
-     ========================================== */
-  .label-print-area {
+  #print-mount {
     display: block !important;
-    page-break-after: always;
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
-  .label-sheet {
-    width: 100%;
-    padding: 0;
-    margin: 0;
+  .address-label-sheet {
+    max-width: none !important;
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: #ffffff !important;
+    box-shadow: none !important;
   }
 
-  /* A4 sheet */
-  .label-sheet.a4 {
-    width: 210mm;
-    min-height: 297mm;
+  /* DECREASED LOGO SIZE ON PRINT (Unobtrusive & Clean) */
+  .label-logo {
+    max-height: 20px !important;
+    max-width: 95px !important;
+    height: auto !important;
+    width: auto !important;
+    object-fit: contain !important;
   }
 
-  /* A5 sheet */
-  .label-sheet.a5 {
-    width: 148mm;
-    min-height: 210mm;
+  .label-header {
+    border-bottom: 1.5px solid #000000 !important;
+    padding-bottom: 4px !important;
+    margin-bottom: 8px !important;
   }
 
-  /* 4x6 inch label */
-  .label-sheet.label-4x6 {
-    width: 4in;
-    min-height: 6in;
+  .label-badge {
+    font-size: 8px !important;
+    padding: 2px 5px !important;
+    background: #000000 !important;
+    color: #ffffff !important;
   }
 
-  .label-card {
-    border: 2px solid #000;
-    padding: 12mm;
-    page-break-inside: avoid;
-    font-family: 'Inter', Arial, sans-serif;
+  .address-label-sheet-item {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    background: #ffffff !important;
+    color: #000000 !important;
   }
 
-  .label-card.no-border {
-    border: none;
+  .address-label-sheet-item.label-bordered {
+    border: 1.5px solid #000000 !important;
+    border-radius: 4px !important;
   }
 
-  .label-logo-print {
-    text-align: center;
-    margin-bottom: 8mm;
-    border-bottom: 1px solid #ccc;
-    padding-bottom: 4mm;
+  .label-consignee-name,
+  .label-consigner-name {
+    color: #000000 !important;
   }
 
-  .label-logo-print img {
-    height: 20mm;
-    display: inline-block;
+  .label-address-body,
+  .label-consigner-address {
+    color: #111827 !important;
   }
 
-  .label-section {
-    margin-bottom: 6mm;
-  }
-
-  .label-prefix {
-    font-weight: bold;
-    font-size: 14pt;
-    margin-bottom: 2mm;
-    text-decoration: underline;
-  }
-
-  .label-name {
-    font-weight: bold;
-    font-size: 16pt;
-    margin-bottom: 2mm;
-  }
-
-  .label-address {
-    font-size: 12pt;
-    line-height: 1.6;
-    white-space: pre-wrap;
-  }
-
-  .label-contact {
-    font-size: 11pt;
-    margin-top: 2mm;
-  }
-
-  .label-pincode {
-    font-size: 18pt;
-    font-weight: bold;
-    letter-spacing: 2pt;
+  .label-pincode-highlight span {
+    background: #ffffff !important;
+    color: #000000 !important;
+    border: 1.5px solid #000000 !important;
   }
 
   .label-divider {
-    border-top: 1px dashed #999;
-    margin: 6mm 0;
+    border-top: 1px dashed #4b5563 !important;
   }
 
-  /* Multi-label per page */
-  .label-grid-2x2 {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
-    gap: 4mm;
-    width: 210mm;
-    height: 297mm;
-    padding: 8mm;
-  }
-
-  .label-grid-2x2 .label-card {
-    overflow: hidden;
-  }
-
-  /* Page margins */
+  /* Standard 4x6 Thermal Label Print */
   @page {
-    margin: 10mm;
+    margin: 4mm;
   }
 
-  @page :first {
-    margin-top: 10mm;
+  .label-size-4x6 {
+    width: 98mm !important;
+    min-height: 144mm !important;
+    padding: 2mm !important;
+  }
+
+  /* A4 Single Sheet */
+  .label-size-a4-single {
+    width: 195mm !important;
+    min-height: 275mm !important;
+    padding: 10mm !important;
+  }
+
+  .label-size-a4-single .label-consignee-name {
+    font-size: 18pt !important;
+  }
+
+  .label-size-a4-single .label-address-body {
+    font-size: 14pt !important;
+    line-height: 1.5 !important;
+  }
+
+  .label-size-a4-single .barcode-lines {
+    height: 36px !important;
+  }
+
+  /* A4 2-Per-Page (Top & Bottom Half) */
+  .label-size-a4-2 .label-grid-2up {
+    display: flex !important;
+    flex-direction: column !important;
+    height: 275mm !important;
+    justify-content: space-around !important;
+    gap: 8mm !important;
+  }
+
+  .label-size-a4-2 .address-label-sheet-item {
+    padding: 8mm !important;
+  }
+
+  .label-size-a4-2 .cut-guide-line {
+    display: block !important;
+    border-top: 1px dashed #666 !important;
+    margin: 4mm 0 !important;
+  }
+
+  /* A4 4-Per-Page (2x2 Grid) */
+  .label-size-a4-4 .label-grid-4up {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    grid-template-rows: 1fr 1fr !important;
+    width: 195mm !important;
+    height: 275mm !important;
+    gap: 6mm !important;
+    padding: 4mm !important;
+  }
+
+  .label-size-a4-4 .address-label-sheet-item {
+    padding: 6mm !important;
+    font-size: 10pt !important;
+  }
+
+  .label-size-a4-4 .label-logo {
+    max-height: 16px !important;
+  }
+
+  .label-size-a4-4 .barcode-lines {
+    height: 18px !important;
+  }
+
+  /* A5 Half Sheet */
+  .label-size-a5 {
+    width: 138mm !important;
+    min-height: 198mm !important;
+    padding: 6mm !important;
+  }
+
+  /* 3x2 Compact Sticker */
+  .label-size-3x2 {
+    width: 72mm !important;
+    min-height: 48mm !important;
+    padding: 1.5mm !important;
+  }
+
+  .label-size-3x2 .label-logo {
+    max-height: 13px !important;
+    max-width: 65px !important;
+  }
+
+  .label-size-3x2 .label-badge {
+    display: none !important;
+  }
+
+  .label-size-3x2 .label-consignee-name {
+    font-size: 10pt !important;
+  }
+
+  .label-size-3x2 .label-address-body {
+    font-size: 8pt !important;
+    line-height: 1.25 !important;
+  }
+
+  .label-size-3x2 .label-contact-line {
+    font-size: 8pt !important;
+    margin-top: 2px !important;
+  }
+
+  .label-size-3x2 .barcode-lines {
+    height: 14px !important;
+    margin-bottom: 1px !important;
+  }
+
+  .label-size-3x2 .barcode-subtext {
+    font-size: 7pt !important;
+  }
+
+  .label-size-3x2 .label-from-section {
+    display: none !important; /* Save space on small 3x2 stickers */
+  }
+
+  .label-size-3x2 .label-divider {
+    display: none !important;
   }
 }
