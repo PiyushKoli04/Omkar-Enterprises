@@ -357,9 +357,9 @@
       </div>
 
       <!-- Saved Label History -->
-      <div class="card p-6 shadow-sm mt-8">
-        <h3 class="text-base font-bold mb-4">Recently Created Labels</h3>
-        <div id="labels-history-list" class="space-y-2">
+      <div class="card p-3 sm:p-6 shadow-sm mt-8 overflow-hidden">
+        <h3 class="text-base font-bold mb-3">Recently Created Labels</h3>
+        <div id="labels-history-list" class="space-y-2.5">
           <span class="text-xs text-secondary">Loading history...</span>
         </div>
       </div>
@@ -876,16 +876,17 @@
         }
 
         container.innerHTML = list.map(l => `
-          <div class="card p-3 border border-border flex justify-between items-center text-xs">
-            <div>
-              <strong>To: ${escapeHtml(l.toName)}</strong> (${escapeHtml(l.toCity || '')}, ${escapeHtml(l.toState || '')} - ${escapeHtml(l.toPincode || 'N/A')})
-              <p class="text-secondary truncate max-w-sm">${escapeHtml(l.toAddress)}</p>
+          <div class="card p-3 border border-border flex flex-col gap-2 text-xs w-full overflow-hidden">
+            <div class="min-w-0">
+              <div class="font-bold text-sm text-primary leading-tight">To: ${escapeHtml(l.toName)}</div>
+              <div class="text-secondary font-medium text-xs mt-0.5">(${escapeHtml(l.toCity || '')}, ${escapeHtml(l.toState || '')} - ${escapeHtml(l.toPincode || 'N/A')})</div>
+              <p class="text-secondary truncate max-w-full mt-1 text-xs">${escapeHtml(l.toAddress)}</p>
             </div>
-            <div class="flex flex-wrap gap-1.5 items-center">
-              <button class="btn btn-ghost btn-xs reprint-btn" data-json='${JSON.stringify(l).replace(/'/g, "&apos;")}' title="Load and Print">Print</button>
-              <button class="btn btn-ghost btn-xs text-primary history-pdf-btn" data-json='${JSON.stringify(l).replace(/'/g, "&apos;")}' title="Download PDF">PDF</button>
-              <button class="btn btn-ghost btn-xs text-primary history-email-btn" data-json='${JSON.stringify(l).replace(/'/g, "&apos;")}' title="Send to Email">Email</button>
-              <button class="btn btn-ghost btn-xs text-danger del-label-btn" data-id="${l.id}" title="Delete">Delete</button>
+            <div class="flex items-center gap-1.5 pt-2 border-t border-border/60 w-full">
+              <button class="btn btn-ghost btn-xs reprint-btn flex-1 py-1 font-bold text-center border border-border/80" data-json='${JSON.stringify(l).replace(/'/g, "&apos;")}' title="Load and Print">Print</button>
+              <button class="btn btn-ghost btn-xs text-primary history-pdf-btn flex-1 py-1 font-bold text-center border border-border/80" data-json='${JSON.stringify(l).replace(/'/g, "&apos;")}' title="Download PDF">PDF</button>
+              <button class="btn btn-ghost btn-xs text-primary history-email-btn flex-1 py-1 font-bold text-center border border-border/80" data-json='${JSON.stringify(l).replace(/'/g, "&apos;")}' title="Send to Email">Email</button>
+              <button class="btn btn-ghost btn-xs text-danger del-label-btn py-1 px-2.5 font-bold border border-border/80" data-id="${l.id}" title="Delete">Delete</button>
             </div>
           </div>
         `).join('');
